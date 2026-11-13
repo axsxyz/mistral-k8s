@@ -20,6 +20,7 @@ le même plan :
 | 6 | [Le GPU dans Kubernetes](06-gpu-kubernetes.md) | runtime NVIDIA à deux niveaux, device plugin (mode WSL2), `nvidia.com/gpu`, charger une image de 33 Go |
 | 7 | [Observabilité et load test](07-observabilite-load-test.md) | Prometheus, ServiceMonitor, CRD et opérateurs, PromQL, percentiles, TTFT/TPOT, dimensionner un GPU |
 | 8 | [Intégration continue](08-ci.md) | GitHub Actions, validation statique et e2e sur kind, moindre privilège |
+| 9 | [Stress test et réglage `--max-num-seqs`](09-stress-test-reglage.md) | saturation, loi de Little, préemptions, calcul d'un réglage, avant/après |
 | – | [Glossaire](glossaire.md) | tous les termes, en une ligne chacun |
 
 Pour réviser avant un entretien : lire les sections « Questions d'entretien » de chaque fiche, puis le glossaire.

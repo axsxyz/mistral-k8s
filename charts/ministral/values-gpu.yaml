@@ -33,6 +33,12 @@ args:
   # get vLLM's default of 1.0 (the model's generation_config.json sets none).
   - --override-generation-config
   - '{"temperature": 0.1}'
+  # Admit only as many sequences as the KV cache can hold at full length, so running requests are never preempted:
+  # 40,384 tokens / 16 = 2,524 blocks; a 512 + 256 token request needs 48 blocks; 2,524 / 48 = 52 -> 48 with margin.
+  # vLLM's default for a 16 GB GPU is 256: it admitted up to 73 and preempted ~3,000 times under load
+  # (docs/learning/09-stress-test-reglage.md).
+  - --max-num-seqs
+  - "48"
 
 env:
   - name: HF_HOME          # Hugging Face cache on the persistent volume

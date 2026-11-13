@@ -25,6 +25,8 @@
 | **kubelet** | L'agent sur chaque nœud : il démarre les conteneurs des pods et fait tourner les probes. |
 | **KV cache** | La mémoire des clés et valeurs d'attention des tokens déjà vus ; elle limite contexte × requêtes simultanées. |
 | **Label / selector** | Des étiquettes clé=valeur, et la façon de sélectionner des objets par elles (Service → pods). |
+| **Loi de Little** | L = λ × W : requêtes présentes = débit × temps passé ; à débit fixe, la file fait l'attente. |
+| **max_num_seqs** | Nombre maximal de requêtes que vLLM traite dans une même itération (taille du lot). |
 | **MIG / time-slicing** | Partager un GPU : partitions matérielles isolées (A100/H100), ou alternance dans le temps, sans isolation mémoire. |
 | **Namespace** | Un regroupement logique d'objets, pour lister, supprimer ou donner des droits. |
 | **NFD** | Node Feature Discovery : détecte le matériel des nœuds et pose des labels (par exemple, carte NVIDIA présente). |
@@ -33,6 +35,7 @@
 | **Operator** | Un contrôleur qui gère une application à partir de ses propres CRD (Prometheus Operator, GPU Operator). |
 | **p50 / p95 / p99** | La valeur sous laquelle tombent 50 / 95 / 99 % des mesures ; on surveille les hauts percentiles. |
 | **Pod** | La plus petite unité : un ou plusieurs conteneurs qui partagent le réseau et les volumes ; jetable. |
+| **Préemption (vLLM)** | Retirer une requête en cours quand le KV cache est plein ; elle refait son prefill plus tard. |
 | **Prefill / TTFT** | La lecture du prompt, et le temps jusqu'au premier token (time to first token). |
 | **Probe** | Un test de santé : startup (a fini de démarrer ?), readiness (peut recevoir du trafic ?), liveness (vivant ?). |
 | **PromQL** | Le langage de requête de Prometheus (`rate`, `sum by`, `histogram_quantile`…). |

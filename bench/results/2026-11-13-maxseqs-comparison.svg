@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="300" viewBox="0 0 840 300" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<style>.t{font-size:15px;font-weight:600;fill:#1f2328}.a{font-size:11px;fill:#59636e}.v{font-size:10px;font-weight:600;fill:#1f2328}.g{stroke:#d1d9e0;stroke-width:1}</style>
+<rect width="840" height="300" fill="#ffffff"/>
+<text x="56" y="22" class="t">Time per output token, p95</text>
+<text x="56" y="36" class="a">ms (lower is better)</text>
+<line x1="56" x2="408" y1="226.0" y2="226.0" class="g"/>
+<text x="48" y="230.0" class="a" text-anchor="end">0</text>
+<line x1="56" x2="408" y1="180.5" y2="180.5" class="g"/>
+<text x="48" y="184.5" class="a" text-anchor="end">10</text>
+<line x1="56" x2="408" y1="135.0" y2="135.0" class="g"/>
+<text x="48" y="139.0" class="a" text-anchor="end">20</text>
+<line x1="56" x2="408" y1="89.5" y2="89.5" class="g"/>
+<text x="48" y="93.5" class="a" text-anchor="end">30</text>
+<line x1="56" x2="408" y1="44.0" y2="44.0" class="g"/>
+<text x="48" y="48.0" class="a" text-anchor="end">40</text>
+<rect x="66.7" y="134.2" width="22.5" height="91.8" fill="#8c959f" rx="2"/>
+<text x="77.9" y="130.2" class="v" text-anchor="middle">20</text>
+<rect x="93.2" y="162.1" width="22.5" height="63.9" fill="#2a6fdb" rx="2"/>
+<text x="104.5" y="158.1" class="v" text-anchor="middle">14</text>
+<text x="91.2" y="242" class="a" text-anchor="middle">64</text>
+<rect x="137.1" y="95.2" width="22.5" height="130.8" fill="#8c959f" rx="2"/>
+<text x="148.3" y="91.2" class="v" text-anchor="middle">29</text>
+<rect x="163.6" y="162.2" width="22.5" height="63.8" fill="#2a6fdb" rx="2"/>
+<text x="174.9" y="158.2" class="v" text-anchor="middle">14</text>
+<text x="161.6" y="242" class="a" text-anchor="middle">128</text>
+<rect x="207.5" y="96.0" width="22.5" height="130.0" fill="#8c959f" rx="2"/>
+<text x="218.7" y="92.0" class="v" text-anchor="middle">29</text>
+<rect x="234.0" y="162.8" width="22.5" height="63.2" fill="#2a6fdb" rx="2"/>
+<text x="245.3" y="158.8" class="v" text-anchor="middle">14</text>
+<text x="232.0" y="242" class="a" text-anchor="middle">256</text>
+<rect x="277.9" y="93.9" width="22.5" height="132.1" fill="#8c959f" rx="2"/>
+<text x="289.1" y="89.9" class="v" text-anchor="middle">29</text>
+<rect x="304.4" y="160.0" width="22.5" height="66.0" fill="#2a6fdb" rx="2"/>
+<text x="315.7" y="156.0" class="v" text-anchor="middle">15</text>
+<text x="302.4" y="242" class="a" text-anchor="middle">512</text>
+<rect x="348.3" y="92.0" width="22.5" height="134.0" fill="#8c959f" rx="2"/>
+<text x="359.5" y="88.0" class="v" text-anchor="middle">29</text>
+<rect x="374.8" y="161.6" width="22.5" height="64.4" fill="#2a6fdb" rx="2"/>
+<text x="386.1" y="157.6" class="v" text-anchor="middle">14</text>
+<text x="372.8" y="242" class="a" text-anchor="middle">1024</text>
+<text x="232.0" y="262" class="a" text-anchor="middle">concurrent requests</text><text x="476" y="22" class="t">Output throughput</text>
+<text x="476" y="36" class="a">tokens/s</text>
+<line x1="476" x2="828" y1="226.0" y2="226.0" class="g"/>
+<text x="468" y="230.0" class="a" text-anchor="end">0</text>
+<line x1="476" x2="828" y1="180.5" y2="180.5" class="g"/>
+<text x="468" y="184.5" class="a" text-anchor="end">1250</text>
+<line x1="476" x2="828" y1="135.0" y2="135.0" class="g"/>
+<text x="468" y="139.0" class="a" text-anchor="end">2500</text>
+<line x1="476" x2="828" y1="89.5" y2="89.5" class="g"/>
+<text x="468" y="93.5" class="a" text-anchor="end">3750</text>
+<line x1="476" x2="828" y1="44.0" y2="44.0" class="g"/>
+<text x="468" y="48.0" class="a" text-anchor="end">5000</text>
+<rect x="486.7" y="102.7" width="22.5" height="123.3" fill="#8c959f" rx="2"/>
+<text x="497.9" y="98.7" class="v" text-anchor="middle">3.4k</text>
+<rect x="513.2" y="108.4" width="22.5" height="117.6" fill="#2a6fdb" rx="2"/>
+<text x="524.5" y="104.4" class="v" text-anchor="middle">3.2k</text>
+<text x="511.2" y="242" class="a" text-anchor="middle">64</text>
+<rect x="557.1" y="103.7" width="22.5" height="122.3" fill="#8c959f" rx="2"/>
+<text x="568.3" y="99.7" class="v" text-anchor="middle">3.4k</text>
+<rect x="583.6" y="102.7" width="22.5" height="123.3" fill="#2a6fdb" rx="2"/>
+<text x="594.9" y="98.7" class="v" text-anchor="middle">3.4k</text>
+<text x="581.6" y="242" class="a" text-anchor="middle">128</text>
+<rect x="627.5" y="98.9" width="22.5" height="127.1" fill="#8c959f" rx="2"/>
+<text x="638.7" y="94.9" class="v" text-anchor="middle">3.5k</text>
+<rect x="654.0" y="101.4" width="22.5" height="124.6" fill="#2a6fdb" rx="2"/>
+<text x="665.3" y="97.4" class="v" text-anchor="middle">3.4k</text>
+<text x="652.0" y="242" class="a" text-anchor="middle">256</text>
+<rect x="697.9" y="100.6" width="22.5" height="125.4" fill="#8c959f" rx="2"/>
+<text x="709.1" y="96.6" class="v" text-anchor="middle">3.4k</text>
+<rect x="724.4" y="102.4" width="22.5" height="123.6" fill="#2a6fdb" rx="2"/>
+<text x="735.7" y="98.4" class="v" text-anchor="middle">3.4k</text>
+<text x="722.4" y="242" class="a" text-anchor="middle">512</text>
+<rect x="768.3" y="101.3" width="22.5" height="124.7" fill="#8c959f" rx="2"/>
+<text x="779.5" y="97.3" class="v" text-anchor="middle">3.4k</text>
+<rect x="794.8" y="101.1" width="22.5" height="124.9" fill="#2a6fdb" rx="2"/>
+<text x="806.1" y="97.1" class="v" text-anchor="middle">3.4k</text>
+<text x="792.8" y="242" class="a" text-anchor="middle">1024</text>
+<text x="652.0" y="262" class="a" text-anchor="middle">concurrent requests</text>
+<rect x="300" y="281" width="12" height="12" fill="#8c959f" rx="2"/><text x="318" y="291" class="a">default (256)</text><rect x="450" y="281" width="12" height="12" fill="#2a6fdb" rx="2"/><text x="468" y="291" class="a">max-num-seqs 48</text>
+</svg>

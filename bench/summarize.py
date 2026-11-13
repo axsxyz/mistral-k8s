@@ -11,19 +11,24 @@ from pathlib import Path
 
 
 def load(result_dir: Path) -> list[dict]:
-    runs = [json.loads(p.read_text()) for p in result_dir.glob("c*.json")]
-    return sorted(runs, key=lambda r: r["max_concurrency"])
+    """Closed-loop runs (max_concurrency set) sorted by concurrency, then open-loop bursts by size."""
+    runs = [json.loads(p.read_text()) for p in result_dir.glob("*.json") if p.name != "server-metrics.json"]
+    return sorted(runs, key=lambda r: (r["max_concurrency"] is None, r["max_concurrency"] or r["num_prompts"]))
+
+
+def label(r: dict) -> str:
+    return str(r["max_concurrency"]) if r["max_concurrency"] else f"burst of {r['num_prompts']}"
 
 
 def table(runs: list[dict]) -> str:
     rows = [
-        "| Concurrency | Requests (failed) | Output tok/s | Req/s | TTFT p50 / p95 (ms) | TPOT p50 / p95 (ms) | E2E p95 (s) |",
+        "| Load | Requests (failed) | Output tok/s | Req/s | TTFT p50 / p95 (ms) | TPOT p50 / p95 (ms) | E2E p95 (s) |",
         "|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for r in runs:
         rows.append(
-            f"| {r['max_concurrency']} | {r['completed']} ({r['failed']}) | {r['output_throughput']:.0f} "
-            f"| {r['request_throughput']:.2f} | {r['median_ttft_ms']:.0f} / {r['p95_ttft_ms']:.0f} "
+            f"| {label(r)} | {r['completed']} ({r['failed']}) | {r['output_throughput']:.0f} "
+            f"| {r['request_throughput']:.2f} | {r['median_ttft_ms']:,.0f} / {r['p95_ttft_ms']:,.0f} "
             f"| {r['median_tpot_ms']:.1f} / {r['p95_tpot_ms']:.1f} | {r['p95_e2el_ms'] / 1000:.1f} |"
         )
     return "\n".join(rows)
@@ -62,6 +67,7 @@ def line_chart(x0: int, title: str, xs: list[int], ys: list[float], unit: str, c
 
 
 def svg(runs: list[dict]) -> str:
+    runs = [r for r in runs if r["max_concurrency"]]  # the chart's x axis is concurrency: closed-loop runs only
     xs = [r["max_concurrency"] for r in runs]
     body = line_chart(0, "Output throughput", xs, [r["output_throughput"] for r in runs], "tokens/s", "#2a6fdb")
     body += line_chart(420, "Time to first token, p95", xs, [r["p95_ttft_ms"] for r in runs], "ms", "#d9480f")
@@ -78,6 +84,7 @@ if __name__ == "__main__":
     result_dir = Path(sys.argv[1])
     runs = load(result_dir)
     if not runs:
-        sys.exit(f"no c*.json in {result_dir}")
-    (result_dir / "throughput-latency.svg").write_text(svg(runs))
+        sys.exit(f"no result JSON in {result_dir}")
+    if any(r["max_concurrency"] for r in runs):
+        (result_dir / "throughput-latency.svg").write_text(svg(runs))
     print(table(runs))

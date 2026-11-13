@@ -1,6 +1,9 @@
 # Load test as a Kubernetes Job: `vllm bench serve` (shipped in the vLLM image already loaded on the node) runs inside
-# the cluster and hits the model through its Service, at several concurrency levels.
-# Each result is printed on one line prefixed with RESULT_JSON; bench/run.sh extracts them into bench/results/.
+# the cluster and hits the model through its Service.
+# bench/run.sh fills the three BENCH_* values below. Each level is either:
+#   C        closed loop: at most C requests in flight, max(C x REQ_FACTOR, MIN_REQUESTS) requests in total
+#   burstN   open loop: N requests fired at once (request rate inf, no concurrency limit), to see how the server queues
+# Each result is printed on one line prefixed with RESULT_JSON; bench/run.sh extracts them.
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -19,25 +22,35 @@ spec:
           command: [bash, -euo, pipefail, -c]
           args:
             - |
-              # Fixed shape for every level: 512 prompt tokens, 256 output tokens (ignore_eos makes outputs exactly
-              # 256 tokens), random prompts with a fixed seed, 4 warm-up requests excluded from the results.
-              for C in 1 4 8 16 32; do
-                N=$(( C * 8 )); [ "$N" -lt 32 ] && N=32
-                echo "== concurrency $C, $N requests"
+              # Fixed shape: 512 prompt tokens, exactly 256 output tokens (ignore_eos), fixed seed, 4 warm-ups.
+              for L in $BENCH_LEVELS; do
+                if [[ "$L" == burst* ]]; then
+                  N="${L#burst}"; LIMIT=(--request-rate inf)
+                else
+                  N=$(( L * BENCH_REQ_FACTOR )); [ "$N" -lt "$BENCH_MIN_REQUESTS" ] && N=$BENCH_MIN_REQUESTS
+                  LIMIT=(--max-concurrency "$L")
+                fi
+                echo "== level $L, $N requests"
                 vllm bench serve \
                   --backend vllm --base-url http://ministral.mistral.svc:80 \
                   --model mistralai/Ministral-3-3B-Instruct-2512 \
                   --tokenizer mistralai/Ministral-3-3B-Instruct-2512 --tokenizer-mode mistral \
                   --dataset-name random --random-input-len 512 --random-output-len 256 --random-range-ratio 0 \
                   --ignore-eos --seed 0 --num-warmups 4 \
-                  --num-prompts "$N" --max-concurrency "$C" \
+                  --num-prompts "$N" "${LIMIT[@]}" \
                   --percentile-metrics ttft,tpot,itl,e2el --metric-percentiles 50,95,99 \
-                  --save-result --result-dir /tmp/results --result-filename "c$C.json"
-                echo "RESULT_JSON $(tr -d '\n' < "/tmp/results/c$C.json")"
+                  --save-result --result-dir /tmp/results --result-filename "$L.json"
+                echo "RESULT_JSON $(tr -d '\n' < "/tmp/results/$L.json")"
               done
           env:
+            - name: BENCH_LEVELS
+              value: "1 4 8 16 32"
+            - name: BENCH_REQ_FACTOR
+              value: "8"
+            - name: BENCH_MIN_REQUESTS
+              value: "32"
             - name: HF_HOME          # the tokenizer (a few MB) is downloaded here
               value: /tmp/hf
           resources:
-            requests: { cpu: "1", memory: 2Gi }
-            limits: { memory: 4Gi }
+            requests: { cpu: "2", memory: 4Gi }
+            limits: { memory: 8Gi }

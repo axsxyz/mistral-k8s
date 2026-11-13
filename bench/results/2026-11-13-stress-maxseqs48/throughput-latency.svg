@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="260" viewBox="0 0 840 260" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<style>.t{font-size:15px;font-weight:600;fill:#1f2328}.a{font-size:11px;fill:#59636e}.v{font-size:11px;font-weight:600;fill:#1f2328}.g{stroke:#d1d9e0;stroke-width:1}</style>
+<rect width="840" height="260" fill="#ffffff"/>
+<text x="56" y="24" class="t">Output throughput</text>
+<line x1="56" x2="404" y1="216.0" y2="216.0" class="g"/>
+<text x="48" y="220.0" class="a" text-anchor="end">0</text>
+<line x1="56" x2="404" y1="172.0" y2="172.0" class="g"/>
+<text x="48" y="176.0" class="a" text-anchor="end">1000</text>
+<line x1="56" x2="404" y1="128.0" y2="128.0" class="g"/>
+<text x="48" y="132.0" class="a" text-anchor="end">2000</text>
+<line x1="56" x2="404" y1="84.0" y2="84.0" class="g"/>
+<text x="48" y="88.0" class="a" text-anchor="end">3000</text>
+<line x1="56" x2="404" y1="40.0" y2="40.0" class="g"/>
+<text x="48" y="44.0" class="a" text-anchor="end">4000</text>
+<text x="56.0" y="234" class="a" text-anchor="middle">64</text>
+<text x="143.0" y="234" class="a" text-anchor="middle">128</text>
+<text x="230.0" y="234" class="a" text-anchor="middle">256</text>
+<text x="317.0" y="234" class="a" text-anchor="middle">512</text>
+<text x="404.0" y="234" class="a" text-anchor="middle">1024</text>
+<text x="230.0" y="254" class="a" text-anchor="middle">concurrent requests</text>
+<polyline points="56.0,73.8 143.0,66.9 230.0,65.4 317.0,66.6 404.0,65.0" fill="none" stroke="#2a6fdb" stroke-width="2.5"/>
+<circle cx="56.0" cy="73.8" r="4" fill="#2a6fdb"/>
+<text x="56.0" y="63.8" class="v" text-anchor="middle">3231</text>
+<circle cx="143.0" cy="66.9" r="4" fill="#2a6fdb"/>
+<text x="143.0" y="56.9" class="v" text-anchor="middle">3388</text>
+<circle cx="230.0" cy="65.4" r="4" fill="#2a6fdb"/>
+<text x="230.0" y="55.4" class="v" text-anchor="middle">3423</text>
+<circle cx="317.0" cy="66.6" r="4" fill="#2a6fdb"/>
+<text x="317.0" y="56.6" class="v" text-anchor="middle">3396</text>
+<circle cx="404.0" cy="65.0" r="4" fill="#2a6fdb"/>
+<text x="404.0" y="55.0" class="v" text-anchor="middle">3432</text>
+<text x="56" y="34" class="a">tokens/s</text><text x="476" y="24" class="t">Time to first token, p95</text>
+<line x1="476" x2="824" y1="216.0" y2="216.0" class="g"/>
+<text x="468" y="220.0" class="a" text-anchor="end">0</text>
+<line x1="476" x2="824" y1="172.0" y2="172.0" class="g"/>
+<text x="468" y="176.0" class="a" text-anchor="end">25000</text>
+<line x1="476" x2="824" y1="128.0" y2="128.0" class="g"/>
+<text x="468" y="132.0" class="a" text-anchor="end">50000</text>
+<line x1="476" x2="824" y1="84.0" y2="84.0" class="g"/>
+<text x="468" y="88.0" class="a" text-anchor="end">75000</text>
+<line x1="476" x2="824" y1="40.0" y2="40.0" class="g"/>
+<text x="468" y="44.0" class="a" text-anchor="end">100000</text>
+<text x="476.0" y="234" class="a" text-anchor="middle">64</text>
+<text x="563.0" y="234" class="a" text-anchor="middle">128</text>
+<text x="650.0" y="234" class="a" text-anchor="middle">256</text>
+<text x="737.0" y="234" class="a" text-anchor="middle">512</text>
+<text x="824.0" y="234" class="a" text-anchor="middle">1024</text>
+<text x="650.0" y="254" class="a" text-anchor="middle">concurrent requests</text>
+<polyline points="476.0,209.6 563.0,203.2 650.0,185.7 737.0,152.1 824.0,84.8" fill="none" stroke="#d9480f" stroke-width="2.5"/>
+<circle cx="476.0" cy="209.6" r="4" fill="#d9480f"/>
+<text x="476.0" y="199.6" class="v" text-anchor="middle">3629</text>
+<circle cx="563.0" cy="203.2" r="4" fill="#d9480f"/>
+<text x="563.0" y="193.2" class="v" text-anchor="middle">7262</text>
+<circle cx="650.0" cy="185.7" r="4" fill="#d9480f"/>
+<text x="650.0" y="175.7" class="v" text-anchor="middle">17244</text>
+<circle cx="737.0" cy="152.1" r="4" fill="#d9480f"/>
+<text x="737.0" y="142.1" class="v" text-anchor="middle">36292</text>
+<circle cx="824.0" cy="84.8" r="4" fill="#d9480f"/>
+<text x="824.0" y="74.8" class="v" text-anchor="middle">74534</text>
+<text x="476" y="34" class="a">ms</text>
+</svg>

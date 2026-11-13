@@ -86,3 +86,17 @@ Short records of each choice: the context, what I picked, and what would change 
   - images pre-pulled on GPU nodes (a DaemonSet or a baked node image);
   - lazy pulling (stargz / SOCI).
   Inference images this size dominate a new node's cold start.
+
+## 9. `--max-num-seqs 48` on the GPU profile
+
+- **Context:** under overload, vLLM's default for a 16 GB GPU (`max_num_seqs` 256) admitted up to 73 sequences when the
+  KV cache holds 52 at full length. It then preempted running requests ~3,000 times in an 8,000-request stress test.
+- **Decision:** cap admission at 48, from 2,524 KV blocks ÷ 48 blocks per 512 + 256-token request, with a margin.
+- **Measured, same test, one variable changed:**
+  - 0 preemptions;
+  - TPOT p95 −50% (29 → 14 ms);
+  - throughput unchanged;
+  - TTFT higher at moderate load.
+- **In production:** derive the cap from the real distribution of prompt and output lengths, and revisit it when
+  `max-model-len`, the model or the GPU changes. Prefer KV-cache headroom (fp8 KV cache, more memory) when time to first
+  token matters more than token cadence.

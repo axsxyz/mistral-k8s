@@ -28,7 +28,7 @@ questions for each step. It is a single-node local setup, not a production platf
 | Packaging and IaC | Helm chart with CPU / GPU / CI values; Terraform with a `profile` variable, pinned providers, `plan -out` → `apply` |
 | Model serving | vLLM v0.32.0 (FP8, paged KV cache, continuous batching, OpenAI-compatible API) and llama.cpp (GGUF Q4) behind the same chart |
 | Observability | kube-prometheus-stack, a ServiceMonitor rendered only when its CRD exists, and a 10-panel Grafana dashboard built from vLLM's live `/metrics` |
-| Performance | `vllm bench serve` as an in-cluster Job, at concurrency 1 to 32, with raw JSON results committed |
+| Performance | `vllm bench serve` as an in-cluster Job from 1 to 1,024 concurrent requests, server-side metrics pulled from Prometheus for each run's window, raw JSON committed, and a measured tuning case (`--max-num-seqs`) |
 | CI | shellcheck, helm lint, kubeconform (Kubernetes 1.37 schemas), terraform validate, then an e2e deploy on kind and a real chat completion (static checks verified locally; first hosted run pending) |
 | Supply chain | pinned tool versions with checksum verification, images pinned by tag or digest, provider lock file |
 
@@ -92,7 +92,8 @@ Ministral 3 3B Instruct (2512) on an RTX 5080. ~4 GB of its 16 GB is held by the
 **Load test** ([raw results](bench/results/2026-11-13/), [method](docs/learning/07-observabilite-load-test.md)):
 - random 512-token prompts and exactly 256 output tokens;
 - fixed seed, 4 warm-up requests excluded;
-- run in-cluster against the Service.
+- run in-cluster against the Service;
+- vLLM defaults at the time; `--max-num-seqs 48` came later and does not bind below 48 concurrent requests.
 
 | Concurrency | Requests (failed) | Output tok/s | Req/s | TTFT p50 / p95 (ms) | TPOT p50 / p95 (ms) | E2E p95 (s) |
 |---:|---:|---:|---:|---:|---:|---:|
@@ -127,6 +128,38 @@ One finding worth knowing before you deploy:
   sets 0.1 server-side, as the model card recommends.
 
 Details in [step 4](docs/learning/04-premier-deploiement.md).
+
+### Stress test and a tuning case study
+
+At 64 to 1,024 concurrent requests, 7,936 requests in total:
+- **Saturation:** throughput plateaus at **~3,400 tokens/s**, and time to first token grows with the queue as Little's
+  law predicts (1,024 ÷ 13.4 req/s ≈ 76 s; measured: 75 s).
+- **Failures:** none. vLLM queues, it does not drop.
+- **What Prometheus showed:** the KV cache hit 100%, vLLM admitted up to 73 sequences when only 52 fit at full length,
+  and it **preempted running requests ~3,000 times**.
+
+**The fix:** `--max-num-seqs 48`, computed rather than guessed. 40,384 tokens ÷ 16 = 2,524 KV blocks, and 48 blocks
+per 768-token request, so 52 fit at full length; 48 leaves a margin. Same test again, one variable changed:
+
+![TPOT p95 and throughput, default vs max-num-seqs 48](bench/results/2026-11-13-maxseqs-comparison.svg)
+
+| | default (`max_num_seqs` 256) | `--max-num-seqs 48` |
+|---|---:|---:|
+| Preemptions | 2,984 | **0** |
+| Peak KV cache usage | 100% | 82% |
+| Time per output token, p50 / p95 / p99 (at 1,024) | 17.0 / 29.4 / 30.8 ms | **13.5 / 14.1 / 14.7 ms** |
+| Output throughput (at 1,024) | 3,427 tok/s | 3,432 tok/s |
+| Time to first token, p50 (at 128) | 4.9 s | 6.8 s |
+
+**What the tuning changed:**
+- **Token streaming:** p95 time per token is halved, and p50, p95 and p99 nearly converge, so every user gets a steady
+  stream.
+- **Throughput:** unchanged. The GPU was full in both cases.
+- **The cost:** more requests wait before they start, so time to first token rises at moderate load.
+
+A setting like this moves a trade-off; it does not create capacity. Under overload, the levers for time to first token
+are replicas (autoscaling on `vllm:num_requests_waiting`) or admission control. Full analysis, method and limits:
+[step 9](docs/learning/09-stress-test-reglage.md).
 
 ## Repository layout
 

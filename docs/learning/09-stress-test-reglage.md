@@ -109,6 +109,59 @@ cd bench && python3 compare.py results/2026-11-13-stress-default results/2026-11
    lieu de ~73, donc plus de monde attend à la porte.
    - À saturation, rien ne change : même débit, donc même temps de file (loi de Little).
 
+## Partie 3 : une rafale de 10 000 requêtes (système ouvert)
+
+```bash
+bash bench/run.sh burst "burst10000"     # avec --max-num-seqs 48
+```
+
+**Système fermé et système ouvert :**
+
+- Jusqu'ici, le test était **fermé** : au plus C requêtes en vol, et une nouvelle n'arrive que quand une autre finit.
+- Ici, il est **ouvert** : les 10 000 requêtes sont envoyées **d'un coup**, sans attendre le serveur. C'est le cas d'un
+  pic de trafic réel, ou d'un client qui lance un traitement par lots sans limiter sa concurrence.
+
+**Résultats :**
+
+| Mesure | Valeur |
+|---|---:|
+| Requêtes réussies / échouées | **10 000 / 0** |
+| Durée totale | 759 s (12 min 39 s) |
+| Débit | 3 373 tokens/s, 13,2 req/s |
+| TTFT p50 / p95 | **384 s / 717 s** |
+| TPOT p50 / p95 | **13,6 / 14,3 ms** |
+| Requêtes en file (max, Prometheus) | 9 852 |
+| Requêtes servies en même temps (max) | 48 |
+| KV cache (max) / préemptions | 84 % / **0** |
+| CPU du client (max) | 0,46 cœur |
+
+![File d'attente et débit pendant la rafale](../../bench/results/2026-11-13-burst/timeline.svg)
+
+**Lecture :**
+
+- **La file se vide en ligne droite** : 9 852 requêtes écoulées en ~12 min, à débit constant. C'est la loi de Little en
+  image. La dernière requête attend 10 000 ÷ 13,2 req/s ≈ 760 s, et le test dure 759 s. Mon pronostic (~12 min) était
+  juste.
+- **Rien ne casse :**
+  - 10 000 connexions HTTP ouvertes en même temps ;
+  - 0 erreur, 0 préemption ;
+  - un débit identique au test fermé ;
+  - un TPOT toujours régulier (13,6 / 14,3 ms) grâce à `max-num-seqs 48`. Une fois servie, chaque requête est rapide.
+- **Mais la latence est inacceptable pour un humain** : la moitié des requêtes attend plus de 6 minutes avant son
+  premier token. Le serveur est **robuste**, mais il n'est pas **dimensionné** pour ce pic. C'est exactement la
+  différence entre « ça tient » et « ça répond au besoin ».
+
+**Ce qu'on ferait chez un client :**
+
+- **Absorber le pic en capacité :**
+  - un autoscaling horizontal sur `vllm:num_requests_waiting` (KEDA, ou HPA avec des métriques personnalisées) ;
+  - au rythme mesuré de 13 req/s par GPU, ce pic demanderait ~13 GPU pour revenir sous la minute.
+- **Protéger la latence :** un contrôle d'admission devant vLLM, par exemple :
+  - une passerelle qui répond `429` + `Retry-After` au-delà de N requêtes en attente ;
+  - ou une file de messages pour les traitements par lots, avec des workers qui consomment à un rythme maîtrisé.
+- **Séparer les usages :** un pool interactif (objectif de latence) et un pool batch (objectif de débit), avec des
+  priorités.
+
 ## Ce que ça m'apprend
 
 - **Un réglage déplace un compromis, il ne crée pas de capacité.** Le débit est fixé par le GPU. `max-num-seqs`

@@ -42,4 +42,19 @@ metrics = {
 }
 json.dump(metrics, open(path, "w"), indent=2)
 print(json.dumps(metrics, indent=2))
+
+# Time series over the same window, one point every 5 s, for bench/timeline.py.
+def series(expr: str) -> list[list[float]]:
+    params = {"query": expr, "start": t0.timestamp(), "end": t1.timestamp(), "step": "5"}
+    url = "http://localhost:19090/api/v1/query_range?" + urllib.parse.urlencode(params)
+    result = json.load(urllib.request.urlopen(url))["data"]["result"]
+    return [[round(float(t) - t0.timestamp(), 1), round(float(v), 3)] for t, v in result[0]["values"]] if result else []
+
+timeline = {
+    "requests_waiting": series("sum(vllm:num_requests_waiting)"),
+    "requests_running": series("sum(vllm:num_requests_running)"),
+    "generation_tokens_per_s": series("sum(rate(vllm:generation_tokens_total[10s]))"),
+    "kv_cache_usage": series("max(vllm:kv_cache_usage_perc)"),
+}
+json.dump(timeline, open(path.replace("server-metrics.json", "timeline.json"), "w"))
 EOF

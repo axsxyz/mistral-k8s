@@ -35,11 +35,11 @@ def table(runs: list[dict]) -> str:
 
 
 def nice_ceiling(v: float) -> float:
-    """Smallest of 1, 2, 2.5, 4, 5, 8, 10 x 10^k at or above v, so the four grid steps land on round numbers."""
+    """Smallest of 1, 1.2, 1.5, 2, 2.5, 4, 5, 8, 10 x 10^k at or above v, so the four grid steps land on round numbers."""
     if v <= 0:
         return 1
     k = 10 ** math.floor(math.log10(v))
-    return next(m * k for m in (1, 2, 2.5, 4, 5, 8, 10) if m * k >= v)
+    return next(m * k for m in (1, 1.2, 1.5, 2, 2.5, 4, 5, 8, 10) if m * k >= v)
 
 
 def line_chart(x0: int, title: str, xs: list[int], ys: list[float], unit: str, color: str) -> str:

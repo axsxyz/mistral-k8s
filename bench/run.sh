@@ -36,4 +36,5 @@ python3 summarize.py "$OUT"
 # Server-side view from Prometheus, when the monitoring profile is installed.
 if kubectl -n monitoring get svc monitoring-kube-prometheus-prometheus >/dev/null 2>&1; then
   bash server-metrics.sh "$OUT"
+  python3 timeline.py "$OUT"
 fi

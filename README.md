@@ -157,6 +157,14 @@ per 768-token request, so 52 fit at full length; 48 leaves a margin. Same test a
 - **Throughput:** unchanged. The GPU was full in both cases.
 - **The cost:** more requests wait before they start, so time to first token rises at moderate load.
 
+**And a burst of 10,000 requests at once** (open loop, with the tuned setting):
+- **All 10,000 succeeded.** 0 preemptions, the throughput of the closed-loop test, steady token streaming (TPOT p95
+  14.3 ms).
+- **The queue drained linearly in 12.7 minutes,** as Little's law predicts.
+- **Robust, but not sized for that peak:** median time to first token was 6.4 minutes.
+
+![Queue depth and throughput during a 10,000-request burst](bench/results/2026-11-13-burst/timeline.svg)
+
 A setting like this moves a trade-off; it does not create capacity. Under overload, the levers for time to first token
 are replicas (autoscaling on `vllm:num_requests_waiting`) or admission control. Full analysis, method and limits:
 [step 9](docs/learning/09-stress-test-reglage.md).

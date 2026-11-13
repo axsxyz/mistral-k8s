@@ -9,3 +9,6 @@ crash.log
 # Secrets
 .env
 *.token
+
+# Python
+__pycache__/

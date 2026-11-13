@@ -63,7 +63,7 @@ spec:
       volumes:
         - name: model-cache
           persistentVolumeClaim:
-            claimName: {{ include "ministral.fullname" . }}-model-cache
+            claimName: {{ include "ministral.fullname" . }}-{{ .Values.persistence.name }}
         {{- if .Values.shm.enabled }}
         - name: shm
           emptyDir:

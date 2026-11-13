@@ -17,7 +17,7 @@ le même plan :
 | 3 | [Mon premier cluster : kind](03-cluster-kind.md) | nœud, control plane, etcd, API server, scheduler |
 | 4 | [Premier déploiement à la main](04-premier-deploiement.md) | Namespace, PVC, Deployment, Service, probes, réconciliation |
 | 5 | [Helm et Terraform](05-helm-terraform.md) | chart, values, templates, state, `plan` / `apply` |
-| 6 | [Le GPU dans Kubernetes](06-gpu-kubernetes.md) | runtime NVIDIA, device plugin, `nvidia.com/gpu` *(en cours)* |
+| 6 | [Le GPU dans Kubernetes](06-gpu-kubernetes.md) | runtime NVIDIA à deux niveaux, device plugin (mode WSL2), `nvidia.com/gpu`, charger une image de 33 Go |
 | – | [Glossaire](glossaire.md) | tous les termes, en une ligne chacun |
 
 Pour réviser avant un entretien : lire les sections « Questions d'entretien » de chaque fiche, puis le glossaire.

@@ -29,12 +29,48 @@ resource "kubernetes_namespace_v1" "mistral" {
   }
 }
 
+# --- GPU profile only -------------------------------------------------------------------------------------------------
+
+# The device plugin's DaemonSet only runs on nodes labelled as having an NVIDIA GPU. On a real cluster, Node Feature
+# Discovery or the GPU Operator sets this label; on kind we set it ourselves.
+resource "kubernetes_labels" "gpu_node" {
+  count       = var.profile == "gpu" ? 1 : 0
+  api_version = "v1"
+  kind        = "Node"
+  metadata {
+    name = var.gpu_node
+  }
+  labels = {
+    "nvidia.com/gpu.present" = "true"
+  }
+}
+
+# NVIDIA device plugin: advertises nvidia.com/gpu to the kubelet. Its WSL2 mode (since v0.19.1) reports one "all"
+# device backed by /dev/dxg.
+resource "helm_release" "nvidia_device_plugin" {
+  count            = var.profile == "gpu" ? 1 : 0
+  name             = "nvidia-device-plugin"
+  namespace        = "nvidia-device-plugin"
+  create_namespace = true
+  repository       = "https://nvidia.github.io/k8s-device-plugin"
+  chart            = "nvidia-device-plugin"
+  version          = "0.20.1"
+  wait             = true
+
+  depends_on = [kubernetes_labels.gpu_node]
+}
+
+# --- Model server -----------------------------------------------------------------------------------------------------
+
 resource "helm_release" "ministral" {
   name      = "ministral"
   namespace = kubernetes_namespace_v1.mistral.metadata[0].name
   chart     = local.chart_dir
 
   values = [for f in local.values_files : file(f)]
+
+  # On the GPU profile, the GPU must be advertised before the pod can be scheduled.
+  depends_on = [helm_release.nvidia_device_plugin]
 
   # Wait until the Deployment is available: the first start downloads the weights and loads the model.
   wait    = true

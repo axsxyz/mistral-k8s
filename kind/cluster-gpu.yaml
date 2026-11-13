@@ -1,0 +1,16 @@
+# Same cluster as cluster.yaml, plus the GPU: the node container mounts /dev/null on
+# /var/run/nvidia-container-devices/all, which the NVIDIA runtime (Docker's default, see scripts/setup-gpu-host.sh)
+# reads as "give this container every GPU". Method from NVIDIA's nvkind.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: mistral
+nodes:
+  - role: control-plane
+    image: kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5
+    extraMounts:
+      - hostPath: /dev/null
+        containerPath: /var/run/nvidia-container-devices/all
+    extraPortMappings:
+      - containerPort: 30080
+        hostPort: 8080
+        listenAddress: 127.0.0.1

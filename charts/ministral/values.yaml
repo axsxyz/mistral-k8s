@@ -35,6 +35,7 @@ env:
 
 # Model weights are cached on a PersistentVolumeClaim mounted at this path.
 persistence:
+  name: model-cache   # PVC name suffix; each profile uses its own volume
   size: 5Gi
   storageClass: standard   # kind's local-path StorageClass
   mountPath: /models

@@ -70,3 +70,17 @@ Short records of each choice: the context, what I picked, and what would change 
   - a remote state backend with locking;
   - plans posted on pull requests;
   - secrets (HF token) from a secret manager, never in the state or the repo.
+
+## 8. Getting a 33 GB inference image onto the node
+
+- **Context:** the kind node has its own containerd and cannot see Docker's images. `kind load docker-image` failed
+  (`content digest ... not found`). Docker 29's containerd image store keeps only the local platform's layers, and kind
+  imports with `--all-platforms`.
+- **Decision:** `scripts/load-image-into-kind.sh` exports one platform (`docker save --platform linux/amd64`) and imports
+  it straight into the node's containerd. It took 3 min 36 s. The pod references the tag with `IfNotPresent`, because a
+  manually loaded image keeps no registry digest.
+- **In production:**
+  - a registry close to the cluster;
+  - images pre-pulled on GPU nodes (a DaemonSet or a baked node image);
+  - lazy pulling (stargz / SOCI).
+  Inference images this size dominate a new node's cold start.

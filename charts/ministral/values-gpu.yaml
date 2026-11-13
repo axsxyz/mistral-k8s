@@ -1,0 +1,50 @@
+# GPU profile: vLLM + Ministral 3 3B Instruct in FP8 on one NVIDIA GPU. Layered over values.yaml (the CPU profile);
+# lists such as args and env replace the defaults entirely.
+
+image:
+  repository: vllm/vllm-openai
+  # 33 GB image: preloaded into the kind node with scripts/load-image-into-kind.sh (see docs/learning/06), so the pod
+  # uses the tag (the loaded copy keeps no registry digest). Digest of this tag on Docker Hub:
+  # sha256:befccf0e7e4089aa23926bb6f887a85c0d46c2a99e6de5c5ffdf5cb7957c5b34
+  tag: v0.32.0
+  digest: ""
+  pullPolicy: IfNotPresent
+
+servedModel: mistralai/Ministral-3-3B-Instruct-2512
+
+containerPort: 8000
+
+# The image's entrypoint is `vllm serve`; same flags as scripts/serve-docker.sh (step 2).
+args:
+  - mistralai/Ministral-3-3B-Instruct-2512
+  - --tokenizer-mode
+  - mistral
+  - --config-format
+  - mistral
+  - --load-format
+  - mistral
+  - --max-model-len
+  - "8192"
+  - --gpu-memory-utilization
+  - "0.6"          # Windows keeps ~4 GB of the 16 GB for the display
+  - --port
+  - "8000"
+
+env:
+  - name: HF_HOME          # Hugging Face cache on the persistent volume
+    value: /models
+
+persistence:
+  name: model-cache-vllm   # separate from the CPU profile's volume (different size and content)
+  size: 15Gi
+
+resources:
+  requests: { cpu: "2", memory: 8Gi }
+  limits: { memory: 16Gi }
+
+gpu:
+  enabled: true
+
+shm:
+  enabled: true      # vLLM needs more shared memory than the container default (Docker's --ipc=host)
+  sizeLimit: 2Gi

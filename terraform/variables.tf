@@ -16,6 +16,12 @@ variable "namespace" {
   default     = "mistral"
 }
 
+variable "gpu_node" {
+  description = "Node that has the GPU (GPU profile). kind names the node <cluster name>-control-plane."
+  type        = string
+  default     = "mistral-control-plane"
+}
+
 variable "profile" {
   description = "cpu = llama.cpp + GGUF Q4 on CPU; gpu = vLLM + FP8 weights on one NVIDIA GPU."
   type        = string

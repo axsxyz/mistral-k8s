@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "ministral.fullname" . }}-model-cache
+  name: {{ include "ministral.fullname" . }}-{{ .Values.persistence.name }}
   labels:
     {{- include "ministral.labels" . | nindent 4 }}
   {{- if .Values.persistence.keepOnUninstall }}

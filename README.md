@@ -1,9 +1,11 @@
 # Mistral on Kubernetes
 
+[![ci](https://github.com/axsxyz/mistral-k8s/actions/workflows/ci.yml/badge.svg)](https://github.com/axsxyz/mistral-k8s/actions/workflows/ci.yml)
+
 Serving Mistral's **Ministral 3** models on Kubernetes, end to end, on a single workstation:
 - a GPU profile with **vLLM** (FP8 weights) and a CPU profile with **llama.cpp** (GGUF Q4);
 - packaged as a **Helm** chart and deployed with **Terraform** on a local **kind** cluster under WSL2;
-- observed with **Prometheus + Grafana**, load-tested in-cluster, with a **CI** workflow (static checks + e2e on kind).
+- observed with **Prometheus + Grafana**, load-tested in-cluster, and redeployed from scratch by **CI** on every push.
 
 ![Output throughput and time to first token by concurrency](bench/results/2026-11-13/throughput-latency.svg)
 
@@ -29,7 +31,7 @@ questions for each step. It is a single-node local setup, not a production platf
 | Model serving | vLLM v0.32.0 (FP8, paged KV cache, continuous batching, OpenAI-compatible API) and llama.cpp (GGUF Q4) behind the same chart |
 | Observability | kube-prometheus-stack, a ServiceMonitor rendered only when its CRD exists, and a 10-panel Grafana dashboard built from vLLM's live `/metrics` |
 | Performance | `vllm bench serve` as an in-cluster Job from 1 to 1,024 concurrent requests, server-side metrics pulled from Prometheus for each run's window, raw JSON committed, and a measured tuning case (`--max-num-seqs`) |
-| CI | shellcheck, helm lint, kubeconform (Kubernetes 1.37 schemas), terraform validate, then an e2e deploy on kind and a real chat completion (static checks verified locally; first hosted run pending) |
+| CI | shellcheck, helm lint, kubeconform (Kubernetes 1.37 schemas), terraform validate, then an e2e deploy on kind and a real chat completion: about 2.5 min per run on a GitHub-hosted runner |
 | Supply chain | pinned tool versions with checksum verification, images pinned by tag or digest, provider lock file |
 
 ## Architecture
@@ -192,8 +194,8 @@ are replicas (autoscaling on `vllm:num_requests_waiting`) or admission control. 
 - [x] **C.** kind cluster, first deployment by hand: Namespace, PVC, Deployment, Service, probes
 - [x] **D.** Helm chart + Terraform (`plan -out` / `apply`)
 - [x] **E.** GPU in the cluster: NVIDIA runtime in the kind node, device plugin (WSL2 mode), vLLM profile
-- [x] **F.** Prometheus + Grafana, in-cluster load test
-- [ ] **F'.** CI: workflow written, static checks pass locally; first green hosted run pending
+- [x] **F.** Prometheus + Grafana, in-cluster load test, CI with an e2e deploy on kind
+- [x] **G.** Stress test to 1,024 concurrent requests and a 10,000-request burst, `--max-num-seqs` tuning measured
 - [ ] **Next.** The same Terraform on a managed cluster with GPU nodes (OVHcloud Managed Kubernetes); autoscaling on
   queue depth; Ministral 3 8B; prefix caching for shared system prompts
 

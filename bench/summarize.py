@@ -5,6 +5,7 @@ Standard library only. Field names are the ones vllm v0.32.0 writes (vllm/benchm
 """
 
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -28,11 +29,19 @@ def table(runs: list[dict]) -> str:
     return "\n".join(rows)
 
 
+def nice_ceiling(v: float) -> float:
+    """Smallest of 1, 2, 2.5, 4, 5, 8, 10 x 10^k at or above v, so the four grid steps land on round numbers."""
+    if v <= 0:
+        return 1
+    k = 10 ** math.floor(math.log10(v))
+    return next(m * k for m in (1, 2, 2.5, 4, 5, 8, 10) if m * k >= v)
+
+
 def line_chart(x0: int, title: str, xs: list[int], ys: list[float], unit: str, color: str) -> str:
     """One 420x260 panel: polyline over evenly spaced concurrency levels, y axis from 0."""
     w, h, left, right, top, bottom = 420, 260, 56, 16, 40, 44
     pw, ph = w - left - right, h - top - bottom
-    ymax = max(ys) * 1.15 or 1
+    ymax = nice_ceiling(max(ys) * 1.12)
     px = lambda i: x0 + left + (pw * i / max(len(xs) - 1, 1))
     py = lambda v: top + ph - ph * v / ymax
     out = [f'<text x="{x0 + left}" y="24" class="t">{title}</text>']

@@ -7,6 +7,7 @@ KIND_VERSION=v0.33.0
 KUBECTL_VERSION=v1.37.1      # within one minor of the cluster (kind v0.33 default node: v1.37.0)
 HELM_VERSION=v4.3.1
 TERRAFORM_VERSION=1.17.0
+KUBECONFORM_VERSION=v0.8.0   # validates rendered manifests against the Kubernetes JSON schemas
 
 BIN="$HOME/.local/bin"
 TMP="$(mktemp -d)"
@@ -42,8 +43,16 @@ verify "$ZIP" "$(curl -fsSL "https://releases.hashicorp.com/terraform/$TERRAFORM
 python3 -c "import zipfile,sys; zipfile.ZipFile(sys.argv[1]).extract('terraform')" "$ZIP"
 install -m 0755 terraform "$BIN/terraform"
 
+echo "== kubeconform $KUBECONFORM_VERSION"
+TGZ=kubeconform-linux-amd64.tar.gz
+curl -fsSLO "https://github.com/yannh/kubeconform/releases/download/$KUBECONFORM_VERSION/$TGZ"
+verify "$TGZ" "$(curl -fsSL "https://github.com/yannh/kubeconform/releases/download/$KUBECONFORM_VERSION/CHECKSUMS" | grep " $TGZ\$" | cut -d' ' -f1)"
+tar -xzf "$TGZ" kubeconform
+install -m 0755 kubeconform "$BIN/kubeconform"
+
 echo "== Installed"
 kind version
 kubectl version --client
 helm version --short
 terraform version | head -1
+kubeconform -v

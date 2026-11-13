@@ -23,4 +23,11 @@ grafana:
     dashboards:
       enabled: true
       searchNamespace: ALL
+    datasources:
+      # Grafana never asks Prometheus for a step smaller than the datasource's timeInterval. The chart copies
+      # Prometheus's default scrape interval (30s), so panels showed one point per 30 s although vLLM is scraped
+      # every 1 s.
+      defaultDatasourceScrapeInterval: 1s
+      alertmanager:
+        enabled: false   # Alertmanager itself is disabled above
   defaultDashboardsTimezone: browser

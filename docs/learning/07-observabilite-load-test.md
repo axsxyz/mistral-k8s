@@ -53,7 +53,12 @@ freins :
 |---|---|---|---|
 | Collecte de Prometheus (`interval`) | 15 s | **1 s** (avec `scrapeTimeout: 1s` : le timeout ne doit pas dépasser l'intervalle) | `values.yaml` → `metrics.serviceMonitor` |
 | Fenêtre de `rate()` et `histogram_quantile()` | 1 min, figée | variable **Rate window**, 10 s par défaut (5 s / 10 s / 30 s / 1 min) | `vllm-dashboard.json` |
+| Pas des requêtes (`step`) | 30 s : la source de données déclarait `timeInterval: 30s`, recopié de l'intervalle par défaut de Prometheus | **1 s** (`grafana.sidecar.datasources.defaultDatasourceScrapeInterval`, plus `interval: 1s` sur chaque panneau) | `kube-prometheus-stack-values.yaml`, `vllm-dashboard.json` |
 | Rafraîchissement de Grafana | 5 s minimum | **1 s** (`grafana.ini` → `dashboards.min_refresh_interval`) | `kube-prometheus-stack-values.yaml` |
+
+Le piège du `step` : le tableau se rafraîchissait bien toutes les secondes, mais chaque requête demandait un point
+toutes les 30 s (`Step: 30s` dans l'inspecteur de requête). Grafana ne descend jamais sous le `timeInterval` de la
+source de données. Il faut donc aligner **quatre** réglages : collecte, pas, fenêtre et rafraîchissement.
 
 **Les compromis :**
 

@@ -95,7 +95,8 @@
           "refId": "A"
         }
       ],
-      "id": 1
+      "id": 1,
+      "interval": "1s"
     },
     {
       "type": "stat",
@@ -136,7 +137,8 @@
           "refId": "A"
         }
       ],
-      "id": 2
+      "id": 2,
+      "interval": "1s"
     },
     {
       "type": "stat",
@@ -177,7 +179,8 @@
           "refId": "A"
         }
       ],
-      "id": 3
+      "id": 3,
+      "interval": "1s"
     },
     {
       "type": "stat",
@@ -218,7 +221,8 @@
           "refId": "A"
         }
       ],
-      "id": 4
+      "id": 4,
+      "interval": "1s"
     },
     {
       "type": "timeseries",
@@ -273,7 +277,8 @@
           "refId": "B"
         }
       ],
-      "id": 5
+      "id": 5,
+      "interval": "1s"
     },
     {
       "type": "timeseries",
@@ -337,7 +342,8 @@
           "refId": "C"
         }
       ],
-      "id": 6
+      "id": 6,
+      "interval": "1s"
     },
     {
       "type": "timeseries",
@@ -401,7 +407,8 @@
           "refId": "C"
         }
       ],
-      "id": 7
+      "id": 7,
+      "interval": "1s"
     },
     {
       "type": "timeseries",
@@ -456,7 +463,8 @@
           "refId": "B"
         }
       ],
-      "id": 8
+      "id": 8,
+      "interval": "1s"
     },
     {
       "type": "timeseries",
@@ -511,7 +519,8 @@
           "refId": "B"
         }
       ],
-      "id": 9
+      "id": 9,
+      "interval": "1s"
     },
     {
       "type": "timeseries",
@@ -575,7 +584,8 @@
           "refId": "C"
         }
       ],
-      "id": 10
+      "id": 10,
+      "interval": "1s"
     }
   ],
   "description": "Built from the metrics vLLM v0.32.0 exposes on /metrics. CPU profile (llama.cpp) metrics use other names and are not shown. Scraped every 1 s; the Rate window variable sets the rate()/quantile window (default 10 s).",

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ministral.fullname" . }}
+  labels:
+    {{- include "ministral.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  # Recreate: the volume is ReadWriteOnce and one GPU cannot hold two model servers during a rolling update.
+  strategy: { type: Recreate }
+  selector:
+    matchLabels:
+      {{- include "ministral.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ministral.selectorLabels" . | nindent 8 }}
+      annotations:
+        # Restart the pod when the values change, even if only args changed.
+        checksum/values: {{ toJson .Values | sha256sum }}
+    spec:
+      containers:
+        - name: server
+          image: {{ include "ministral.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.containerPort }}
+          volumeMounts:
+            - name: model-cache
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- if .Values.shm.enabled }}
+            - name: shm
+              mountPath: /dev/shm
+            {{- end }}
+          resources:
+            requests:
+              {{- toYaml .Values.resources.requests | nindent 14 }}
+            limits:
+              {{- with .Values.resources.limits }}
+              {{- toYaml . | nindent 14 }}
+              {{- end }}
+              {{- if .Values.gpu.enabled }}
+              nvidia.com/gpu: 1
+              {{- end }}
+          startupProbe:
+            httpGet: { path: {{ .Values.probes.path }}, port: http }
+            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
+            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+          readinessProbe:
+            httpGet: { path: {{ .Values.probes.path }}, port: http }
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+          livenessProbe:
+            httpGet: { path: {{ .Values.probes.path }}, port: http }
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+      volumes:
+        - name: model-cache
+          persistentVolumeClaim:
+            claimName: {{ include "ministral.fullname" . }}-model-cache
+        {{- if .Values.shm.enabled }}
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.shm.sizeLimit }}
+        {{- end }}

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: ministral
+description: An OpenAI-compatible model server for Mistral's Ministral 3 models (llama.cpp on CPU, vLLM on GPU).
+type: application
+version: 0.1.0
+appVersion: "Ministral-3-2512"

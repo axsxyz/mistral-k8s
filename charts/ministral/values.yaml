@@ -1,0 +1,67 @@
+# Default profile: CPU, llama.cpp server + Mistral's official Q4_K_M GGUF of Ministral 3 3B.
+# values-gpu.yaml overrides the server, the model and the resources for the GPU profile (vLLM).
+
+image:
+  # Pinned by digest: llama.cpp no longer publishes per-build server tags (this one is v1.0.0-b12359).
+  repository: ghcr.io/ggml-org/llama.cpp
+  tag: server
+  digest: sha256:e3032ea0712da96dec820c770626385de4322dd06619fb5829256a504bbc9375
+  pullPolicy: IfNotPresent
+
+# Name the server reports in /v1/models; clients pass it as "model".
+servedModel: mistralai/Ministral-3-3B-Instruct-2512-GGUF:Q4_K_M
+
+containerPort: 8080
+
+args:
+  - -hf
+  - mistralai/Ministral-3-3B-Instruct-2512-GGUF:Q4_K_M
+  - --no-mmproj          # text only: skip the vision encoder
+  - --host
+  - 0.0.0.0
+  - --port
+  - "8080"
+  - --ctx-size
+  - "4096"
+  - --threads
+  - "4"                  # match resources.requests.cpu, or llama.cpp would use every core of the machine
+  - --temp
+  - "0.1"                # the model card recommends a temperature below 0.1 for production use
+  - --metrics            # Prometheus metrics on /metrics
+
+env:
+  - name: LLAMA_CACHE    # where llama.cpp stores downloaded models: the persistent volume
+    value: /models
+
+# Model weights are cached on a PersistentVolumeClaim mounted at this path.
+persistence:
+  size: 5Gi
+  storageClass: standard   # kind's local-path StorageClass
+  mountPath: /models
+  # Keep the PVC (and the downloaded weights) when the release is uninstalled.
+  keepOnUninstall: true
+
+resources:
+  requests: { cpu: "4", memory: 4Gi }
+  limits: { memory: 6Gi }
+
+gpu:
+  enabled: false   # true adds nvidia.com/gpu: 1 to the limits (needs the NVIDIA device plugin)
+
+# Shared memory for PyTorch workers (vLLM). Docker's --ipc=host equivalent: an in-memory emptyDir on /dev/shm.
+shm:
+  enabled: false
+  sizeLimit: 2Gi
+
+probes:
+  path: /health
+  # Model servers take minutes to start (download + load). The startup probe gives them
+  # periodSeconds x failureThreshold before the liveness probe can restart the container.
+  startup: { periodSeconds: 10, failureThreshold: 60 }
+  readiness: { periodSeconds: 10 }
+  liveness: { periodSeconds: 20, failureThreshold: 3 }
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30080   # published on localhost:8080 by kind/cluster.yaml

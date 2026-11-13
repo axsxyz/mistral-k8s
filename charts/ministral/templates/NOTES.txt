@@ -1,0 +1,7 @@
+Model: {{ .Values.servedModel }}
+
+The first start downloads the weights; follow it with:
+  kubectl -n {{ .Release.Namespace }} rollout status deploy/{{ include "ministral.fullname" . }}
+
+Then (kind publishes NodePort {{ .Values.service.nodePort }} on localhost:8080):
+  curl -s localhost:8080/v1/models

@@ -1,0 +1,11 @@
+# Terraform: local state and provider binaries (the lock file IS committed)
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*.tfvars
+terraform/tfplan
+crash.log
+
+# Secrets
+.env
+*.token

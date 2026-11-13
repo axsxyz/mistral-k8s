@@ -56,6 +56,16 @@ cd bench && python3 compare.py results/2026-11-13-stress-default results/2026-11
 | KV cache (max) | **100 %** |
 | préemptions | **~2 984** |
 
+**Ce que montrait Grafana pendant ce test** (un tableau de bord vLLM importé à la main, pas celui du repo) : KV cache
+à 99 %, 73 requêtes en cours, 969 en attente. Ce sont les mêmes chiffres que Prometheus.
+
+![Grafana pendant le stress test, réglages par défaut](../img/grafana-stress-default-settings.png)
+
+Et côté Windows, le Gestionnaire des tâches : GPU à 100 %, 13,2 Go de mémoire dédiée sur 16 (vLLM plus l'affichage),
+67 °C.
+
+![GPU sous charge, vu du Gestionnaire des tâches](../img/gpu-task-manager-under-load.png)
+
 ## Le diagnostic
 
 - **La valeur par défaut :** pour un GPU de moins de 70 Go, vLLM v0.32.0 fixe `max_num_seqs = 256` (lu dans

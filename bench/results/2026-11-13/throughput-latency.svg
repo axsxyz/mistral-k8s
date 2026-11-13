@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="260" viewBox="0 0 840 260" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<style>.t{font-size:15px;font-weight:600;fill:#1f2328}.a{font-size:11px;fill:#59636e}.v{font-size:11px;font-weight:600;fill:#1f2328}.g{stroke:#d1d9e0;stroke-width:1}</style>
+<rect width="840" height="260" fill="#ffffff"/>
+<text x="56" y="24" class="t">Output throughput</text>
+<line x1="56" x2="404" y1="216.0" y2="216.0" class="g"/>
+<text x="48" y="220.0" class="a" text-anchor="end">0</text>
+<line x1="56" x2="404" y1="172.0" y2="172.0" class="g"/>
+<text x="48" y="176.0" class="a" text-anchor="end">1000</text>
+<line x1="56" x2="404" y1="128.0" y2="128.0" class="g"/>
+<text x="48" y="132.0" class="a" text-anchor="end">2000</text>
+<line x1="56" x2="404" y1="84.0" y2="84.0" class="g"/>
+<text x="48" y="88.0" class="a" text-anchor="end">3000</text>
+<line x1="56" x2="404" y1="40.0" y2="40.0" class="g"/>
+<text x="48" y="44.0" class="a" text-anchor="end">4000</text>
+<text x="56.0" y="234" class="a" text-anchor="middle">1</text>
+<text x="143.0" y="234" class="a" text-anchor="middle">4</text>
+<text x="230.0" y="234" class="a" text-anchor="middle">8</text>
+<text x="317.0" y="234" class="a" text-anchor="middle">16</text>
+<text x="404.0" y="234" class="a" text-anchor="middle">32</text>
+<text x="230.0" y="254" class="a" text-anchor="middle">concurrent requests</text>
+<polyline points="56.0,208.8 143.0,190.4 230.0,167.7 317.0,133.0 404.0,84.6" fill="none" stroke="#2a6fdb" stroke-width="2.5"/>
+<circle cx="56.0" cy="208.8" r="4" fill="#2a6fdb"/>
+<text x="56.0" y="198.8" class="v" text-anchor="middle">163</text>
+<circle cx="143.0" cy="190.4" r="4" fill="#2a6fdb"/>
+<text x="143.0" y="180.4" class="v" text-anchor="middle">582</text>
+<circle cx="230.0" cy="167.7" r="4" fill="#2a6fdb"/>
+<text x="230.0" y="157.7" class="v" text-anchor="middle">1099</text>
+<circle cx="317.0" cy="133.0" r="4" fill="#2a6fdb"/>
+<text x="317.0" y="123.0" class="v" text-anchor="middle">1886</text>
+<circle cx="404.0" cy="84.6" r="4" fill="#2a6fdb"/>
+<text x="404.0" y="74.6" class="v" text-anchor="middle">2987</text>
+<text x="56" y="34" class="a">tokens/s</text><text x="476" y="24" class="t">Time to first token, p95</text>
+<line x1="476" x2="824" y1="216.0" y2="216.0" class="g"/>
+<text x="468" y="220.0" class="a" text-anchor="end">0</text>
+<line x1="476" x2="824" y1="172.0" y2="172.0" class="g"/>
+<text x="468" y="176.0" class="a" text-anchor="end">100</text>
+<line x1="476" x2="824" y1="128.0" y2="128.0" class="g"/>
+<text x="468" y="132.0" class="a" text-anchor="end">200</text>
+<line x1="476" x2="824" y1="84.0" y2="84.0" class="g"/>
+<text x="468" y="88.0" class="a" text-anchor="end">300</text>
+<line x1="476" x2="824" y1="40.0" y2="40.0" class="g"/>
+<text x="468" y="44.0" class="a" text-anchor="end">400</text>
+<text x="476.0" y="234" class="a" text-anchor="middle">1</text>
+<text x="563.0" y="234" class="a" text-anchor="middle">4</text>
+<text x="650.0" y="234" class="a" text-anchor="middle">8</text>
+<text x="737.0" y="234" class="a" text-anchor="middle">16</text>
+<text x="824.0" y="234" class="a" text-anchor="middle">32</text>
+<text x="650.0" y="254" class="a" text-anchor="middle">concurrent requests</text>
+<polyline points="476.0,205.3 563.0,202.7 650.0,167.7 737.0,133.0 824.0,79.5" fill="none" stroke="#d9480f" stroke-width="2.5"/>
+<circle cx="476.0" cy="205.3" r="4" fill="#d9480f"/>
+<text x="476.0" y="195.3" class="v" text-anchor="middle">24</text>
+<circle cx="563.0" cy="202.7" r="4" fill="#d9480f"/>
+<text x="563.0" y="192.7" class="v" text-anchor="middle">30</text>
+<circle cx="650.0" cy="167.7" r="4" fill="#d9480f"/>
+<text x="650.0" y="157.7" class="v" text-anchor="middle">110</text>
+<circle cx="737.0" cy="133.0" r="4" fill="#d9480f"/>
+<text x="737.0" y="123.0" class="v" text-anchor="middle">189</text>
+<circle cx="824.0" cy="79.5" r="4" fill="#d9480f"/>
+<text x="824.0" y="69.5" class="v" text-anchor="middle">310</text>
+<text x="476" y="34" class="a">ms</text>
+</svg>

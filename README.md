@@ -180,14 +180,14 @@ full tables and the method.
 
 ## What broke and how I fixed it
 
-**1. Docker Desktop would not start** *(setup)*
+**1. Docker Desktop would not start** *(host setup)*
 - *Symptom:* `mounting vhdx … Wsl/Service/AttachDisk/MountDisk/HCS/E_ACCESSDENIED` on Docker Desktop's data disk.
 - *Root cause:* not determined. The file, its ACLs and Defender's folder protection were ruled out. Docker Desktop was
   older (4.43) than the Windows and WSL builds around it.
 - *Fix:* switched to native Docker Engine in WSL2. kind's GPU path needs it anyway, to set NVIDIA as the daemon's
   default runtime (`bc9d83d`).
 
-**2. `kind load docker-image` failed on the 33 GB vLLM image** *(step E)*
+**2. `kind load docker-image` failed on the 33 GB vLLM image** *(GPU in the cluster)*
 - *Symptom:* `ctr: content digest sha256:6ff5ff0d…: not found`.
 - *Root cause:* Docker 29's containerd image store keeps only the local platform's layers of a multi-platform image,
   while kind imports with `--all-platforms`.
@@ -209,14 +209,14 @@ full tables and the method.
 
   ![TPOT p95 and throughput, default vs max-num-seqs 48](bench/results/2026-11-13-maxseqs-comparison.svg)
 
-**4. vLLM sampled at temperature 1.0** *(review before publishing)*
+**4. vLLM sampled at temperature 1.0** *(first vLLM run; cause found later)*
 - *Symptom:* an artifact in an early answer (`^{[V0-X]}`). The model card recommends a temperature below 0.1.
 - *Root cause:* the model's `generation_config.json` sets no temperature, so requests without one get
   `SamplingParams`' default of 1.0. That was checked in the image, and my notes had said 0.8.
 - *Fix:* `--override-generation-config '{"temperature": 0.1}'` on the GPU profile; llama.cpp gets `--temp 0.1`
   (`27edc7e`).
 
-**5. A 10-token question cost 543 prompt tokens on CPU** *(step C)*
+**5. A 10-token question cost 543 prompt tokens on CPU** *(first deployment)*
 - *Symptom:* ~5 s before the first token on a short question with llama.cpp. vLLM counted 11 prompt tokens for the
   same question.
 - *Root cause:* with no system prompt from the client, the GGUF chat template injects Mistral's default one (~2,500
@@ -224,7 +224,7 @@ full tables and the method.
 - *Fix:* none in the server. It is a trade-off: Mistral recommends that prompt for quality. It is documented, and
   clients that care about latency send their own system prompt (fiche 4).
 
-**6. Chart changes invisible to `terraform plan`, and vLLM restarting for unrelated changes** *(step F)*
+**6. Chart changes invisible to `terraform plan`, and vLLM restarting for unrelated changes** *(monitoring)*
 - *Symptom:* after editing chart templates, `plan` showed no change to the model release. Separately, changing only
   the Prometheus scrape interval restarted vLLM (~4 minutes).
 - *Root cause:* the Helm provider compares the chart version and values, not template content. A `checksum/values`
@@ -232,7 +232,7 @@ full tables and the method.
 - *Fix:* chart `version` bumped to 0.2.0, and the annotation removed. Args already live in the pod template, so real
   changes still roll the pod (`4eab214`).
 
-**7. Grafana panels updated every 30 s despite a 1 s scrape** *(step F)*
+**7. Grafana panels updated every 30 s despite a 1 s scrape** *(monitoring)*
 - *Symptom:* Query inspector showed `Step: 30s` with the dashboard refreshing every second.
 - *Root cause:* the chart sets the Prometheus datasource's `timeInterval` to Prometheus's default scrape interval
   (30 s), and Grafana never queries with a smaller step.

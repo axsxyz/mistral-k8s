@@ -3,7 +3,7 @@
 Serving Mistral's **Ministral 3** models on Kubernetes, end to end, on a single workstation:
 - a GPU profile with **vLLM** (FP8 weights) and a CPU profile with **llama.cpp** (GGUF Q4);
 - packaged as a **Helm** chart and deployed with **Terraform** on a local **kind** cluster under WSL2;
-- observed with **Prometheus + Grafana**, load-tested in-cluster, and checked end to end by **CI**.
+- observed with **Prometheus + Grafana**, load-tested in-cluster, with a **CI** workflow (static checks + e2e on kind).
 
 ![Output throughput and time to first token by concurrency](bench/results/2026-11-13/throughput-latency.svg)
 
@@ -29,7 +29,7 @@ questions for each step. It is a single-node local setup, not a production platf
 | Model serving | vLLM v0.32.0 (FP8, paged KV cache, continuous batching, OpenAI-compatible API) and llama.cpp (GGUF Q4) behind the same chart |
 | Observability | kube-prometheus-stack, a ServiceMonitor rendered only when its CRD exists, and a 10-panel Grafana dashboard built from vLLM's live `/metrics` |
 | Performance | `vllm bench serve` as an in-cluster Job, at concurrency 1 to 32, with raw JSON results committed |
-| CI | shellcheck, helm lint, kubeconform (Kubernetes 1.37 schemas), terraform validate, then an e2e deploy on kind and a real chat completion |
+| CI | shellcheck, helm lint, kubeconform (Kubernetes 1.37 schemas), terraform validate, then an e2e deploy on kind and a real chat completion (static checks verified locally; first hosted run pending) |
 | Supply chain | pinned tool versions with checksum verification, images pinned by tag or digest, provider lock file |
 
 ## Architecture
@@ -106,7 +106,8 @@ Ministral 3 3B Instruct (2512) on an RTX 5080. ~4 GB of its 16 GB is held by the
 - **Throughput:** continuous batching multiplies total throughput by 18× from 1 to 32 concurrent requests.
 - **Per-request speed:** each request only goes from ~166 to ~98 tokens/s (TPOT 6.0 → 10.2 ms).
 - **TTFT** is what degrades most (p95 24 → 310 ms) as new prompts wait for their prefill.
-- **Headroom:** the KV cache (40,384 tokens) is not saturated at 32, so there is room above. Sizing a deployment means
+- **Headroom:** measured in Prometheus over the run, with 0 preemptions, the KV cache peaked at 49% and queue time p99
+  was ≈ 0.3 s. The ceiling is above 32 concurrent requests. Sizing a deployment means
   picking the point on this curve that meets a latency target.
 
 **Serving profiles:**
@@ -150,7 +151,8 @@ Details in [step 4](docs/learning/04-premier-deploiement.md).
 - [x] **C.** kind cluster, first deployment by hand: Namespace, PVC, Deployment, Service, probes
 - [x] **D.** Helm chart + Terraform (`plan -out` / `apply`)
 - [x] **E.** GPU in the cluster: NVIDIA runtime in the kind node, device plugin (WSL2 mode), vLLM profile
-- [x] **F.** Prometheus + Grafana, in-cluster load test, CI with an e2e deploy
+- [x] **F.** Prometheus + Grafana, in-cluster load test
+- [ ] **F'.** CI: workflow written, static checks pass locally; first green hosted run pending
 - [ ] **Next.** The same Terraform on a managed cluster with GPU nodes (OVHcloud Managed Kubernetes); autoscaling on
   queue depth; Ministral 3 8B; prefix caching for shared system prompts
 

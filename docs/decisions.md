@@ -5,7 +5,8 @@ Short records of each choice: the context, what I picked, and what would change 
 ## 1. Native Docker Engine in WSL2, not Docker Desktop
 
 - **Context:** Docker Desktop failed to start: mounting its data disk returned `HCS/E_ACCESSDENIED`. The kind GPU step
-  also needs the NVIDIA runtime set as the Docker daemon's *default* runtime, which Docker Desktop does not expose.
+  also needs the NVIDIA runtime set as the Docker daemon's *default* runtime. That means editing the daemon configuration,
+  which is straightforward with a native daemon and indirect at best with Docker Desktop.
 - **Decision:** Docker Engine from Docker's apt repository, plus the NVIDIA Container Toolkit, inside Ubuntu
   (`scripts/setup-wsl.sh`). This is the same setup as on a Linux GPU server.
 - **In production:** nodes run containerd directly, with the NVIDIA GPU Operator or the toolkit baked into the node image.
@@ -36,8 +37,8 @@ Short records of each choice: the context, what I picked, and what would change 
 - Tool versions are pinned in `scripts/install-tools.sh` and each download is checked against the project's published
   SHA-256.
 - The kind node image, vLLM image and Terraform providers are pinned. The provider lock file is committed.
-- llama.cpp stopped publishing per-build server tags at v1.0.0, so its image is pinned **by digest**. A tag can be moved
-  to point elsewhere; a digest cannot.
+- Images are pinned by **versioned tag and digest** when both exist (llama.cpp: `server-v1.0.0-b12359-b1b770d@sha256:…`).
+  The tag tells a reader which build it is; the digest guarantees it, because a tag can be moved and a digest cannot.
 - **Why:** reproducible rebuilds and a smaller supply-chain surface.
 
 ## 5. Probes sized for model servers

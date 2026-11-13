@@ -81,9 +81,14 @@ bash bench/run.sh
 - **Chaque utilisateur ralentit peu.** Le temps par token (TPOT) passe de 6,0 à 10,2 ms, soit ~166 → ~98 tokens/s par
   requête. À 32 utilisateurs, chacun est encore bien plus rapide qu'un humain ne lit.
 - **Le TTFT est ce qui se dégrade le plus** (p95 de 24 → 310 ms). Les nouvelles requêtes attendent leur tour de
-  prefill pendant que le lot génère. Cela reste sous les 0,5 s, sans file d'attente ni préemption.
-- **Pas de saturation à 32.** Le KV cache tient ~40 000 tokens, et 32 × 768 tokens ≈ 24 500. Le plafond est plus
-  haut : un test à 64 ou 128 le trouverait.
+  prefill pendant que le lot génère. Cela reste sous les 0,5 s. Prometheus, sur la fenêtre du test : **0 préemption**, temps en file d'attente p99 ≈ 0,3 s
+  (estimation par histogramme). La file existe donc, mais elle reste courte.
+- **Pas de saturation à 32.** Mesuré dans Prometheus : le KV cache a culminé à **49 %** et `num_requests_running` à
+  32. Le plafond est plus haut : un test à 64 ou 128 le trouverait.
+- **Piège de lecture :** le log de `vllm bench` affiche « Peak concurrent requests » au double de la limite (64 à 32).
+  L'outil compte, seconde par seconde, toute requête active pendant la seconde, donc une requête qui finit et sa
+  remplaçante comptent toutes les deux (lu dans `vllm/benchmarks/serve.py`). La vraie concurrence est bornée par
+  `--max-concurrency`, et Prometheus confirme : 32.
 
 **Le compromis à expliquer à un client :** plus de requêtes par GPU, c'est moins de coût par token, mais plus de latence
 (surtout le TTFT). On règle le curseur selon un objectif, par exemple « TTFT p95 < 500 ms », pour en déduire la

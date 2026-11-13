@@ -19,8 +19,8 @@ spec:
     spec:
       containers:
         - name: server
-          # Pinned by digest: llama.cpp no longer publishes per-build server tags (v1.0.0-b12359).
-          image: ghcr.io/ggml-org/llama.cpp:server@sha256:e3032ea0712da96dec820c770626385de4322dd06619fb5829256a504bbc9375
+          # Versioned tag + digest: readable and immutable.
+          image: ghcr.io/ggml-org/llama.cpp:server-v1.0.0-b12359-b1b770d@sha256:e3032ea0712da96dec820c770626385de4322dd06619fb5829256a504bbc9375
           args:
             - -hf
             - mistralai/Ministral-3-3B-Instruct-2512-GGUF:Q4_K_M   # downloaded from Hugging Face on first start

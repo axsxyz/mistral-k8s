@@ -38,4 +38,8 @@ usermod -aG docker "$TARGET_USER"
 
 echo "== Check"
 docker version --format 'Docker Engine {{.Server.Version}}'
-docker run --rm --gpus all nvidia/cuda:12.8.0-base-ubuntu24.04 nvidia-smi
+if command -v nvidia-smi >/dev/null; then
+  docker run --rm --gpus all nvidia/cuda:12.8.0-base-ubuntu24.04 nvidia-smi
+else
+  echo "No NVIDIA GPU detected: Docker is ready for the CPU profile."
+fi

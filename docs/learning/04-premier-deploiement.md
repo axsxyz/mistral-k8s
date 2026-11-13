@@ -124,7 +124,9 @@ client, il faut savoir ce que le serveur ajoute au prompt, parce que ça coûte 
   - `targetPort` : celui du conteneur (ici, par son nom, `http` → 8080).
   - `nodePort` : celui ouvert sur le nœud.
 - **llama.cpp utilise par défaut tous les cœurs de la machine,** pas ceux réservés au pod. D'où `--threads`.
-- **L'image llama.cpp n'a plus d'étiquette par build** depuis la v1.0.0 : on l'épingle par **digest**.
+- **Épingler une image par étiquette versionnée et digest.** J'ai d'abord cru que llama.cpp ne publiait plus d'étiquette
+  par build : j'avais testé l'ancien format (`server-b12012`). Le format actuel est `server-v1.0.0-b12359-b1b770d`, et il
+  pointe sur le même digest. Leçon : vérifier le schéma de nommage dans le workflow de build avant de conclure.
 
 ## Questions d'entretien
 

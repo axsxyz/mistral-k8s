@@ -2,9 +2,9 @@
 # values-gpu.yaml overrides the server, the model and the resources for the GPU profile (vLLM).
 
 image:
-  # Pinned by digest: llama.cpp no longer publishes per-build server tags (this one is v1.0.0-b12359).
+  # Versioned tag for readability, digest for immutability (a tag can be moved; the digest cannot).
   repository: ghcr.io/ggml-org/llama.cpp
-  tag: server
+  tag: server-v1.0.0-b12359-b1b770d
   digest: sha256:e3032ea0712da96dec820c770626385de4322dd06619fb5829256a504bbc9375
   pullPolicy: IfNotPresent
 

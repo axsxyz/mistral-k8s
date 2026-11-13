@@ -1,4 +1,4 @@
-# mistral-k8s
+# Mistral on Kubernetes
 
 Serving Mistral's **Ministral 3** models on Kubernetes, end to end, on a single workstation:
 - a GPU profile with **vLLM** (FP8 weights) and a CPU profile with **llama.cpp** (GGUF Q4);

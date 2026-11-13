@@ -1,0 +1,14 @@
+{
+  "window": {
+    "start": "2026-11-13T20:40:59Z",
+    "end": "2026-11-13T20:41:56Z",
+    "seconds": 57
+  },
+  "max_requests_running": 48.0,
+  "max_requests_waiting": 32.0,
+  "max_kv_cache_usage": 0.811,
+  "preemptions": 0.0,
+  "requests_finished": 333.857,
+  "max_client_cpu_cores": 0.43,
+  "max_server_cpu_cores": 0.302
+}

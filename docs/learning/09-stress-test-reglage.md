@@ -181,7 +181,9 @@ bash bench/run.sh burst "burst10000"     # avec --max-num-seqs 48
 
 **Les limites :**
 
-- un seul run par configuration : un écart de ±5 % est du bruit ;
+- un seul run par configuration : un écart de ±5 % est du bruit. C'est mesuré : le palier à 16, rejoué plus tard
+  dans les mêmes conditions (`results/2026-11-13-live/`, où le plafond de 48 ne joue pas), donne 1 822 tokens/s contre
+  1 886, soit −3 % ;
 - une seule forme de trafic (512 → 256) : avec des requêtes plus longues, 48 serait trop ;
 - le calcul suppose `max-model-len` 8 192 et cette forme de requête. En production, on dimensionne sur la distribution
   réelle des longueurs.

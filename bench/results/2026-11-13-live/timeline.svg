@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="260" viewBox="0 0 840 260" font-family="system-ui, -apple-system, Segoe UI, sans-serif">
+<style>.t{font-size:15px;font-weight:600;fill:#1f2328}.a{font-size:11px;fill:#59636e}.g{stroke:#d1d9e0;stroke-width:1}</style>
+<rect width="840" height="260" fill="#ffffff"/>
+<text x="60" y="22" class="t">Requests waiting in the queue</text>
+<text x="60" y="36" class="a">requests</text>
+<line x1="60" x2="406" y1="220.0" y2="220.0" class="g"/>
+<text x="52" y="224.0" class="a" text-anchor="end">0</text>
+<line x1="60" x2="406" y1="176.0" y2="176.0" class="g"/>
+<text x="52" y="180.0" class="a" text-anchor="end">5</text>
+<line x1="60" x2="406" y1="132.0" y2="132.0" class="g"/>
+<text x="52" y="136.0" class="a" text-anchor="end">10</text>
+<line x1="60" x2="406" y1="88.0" y2="88.0" class="g"/>
+<text x="52" y="92.0" class="a" text-anchor="end">15</text>
+<line x1="60" x2="406" y1="44.0" y2="44.0" class="g"/>
+<text x="52" y="48.0" class="a" text-anchor="end">20</text>
+<text x="60.0" y="236" class="a" text-anchor="middle">0</text>
+<text x="233.0" y="254" class="a" text-anchor="middle">minutes since the Job started</text>
+<polygon points="60.0,220.0 60.0,220.0 91.5,220.0 122.9,220.0 154.4,220.0 185.8,220.0 217.3,220.0 248.7,220.0 280.2,79.2 311.6,79.2 343.1,105.6 374.5,79.2 406.0,220.0 406.0,220.0" fill="#d9480f" fill-opacity="0.15"/>
+<polyline points="60.0,220.0 91.5,220.0 122.9,220.0 154.4,220.0 185.8,220.0 217.3,220.0 248.7,220.0 280.2,79.2 311.6,79.2 343.1,105.6 374.5,79.2 406.0,220.0" fill="none" stroke="#d9480f" stroke-width="2"/><text x="480" y="22" class="t">Output throughput</text>
+<text x="480" y="36" class="a">tokens/s</text>
+<line x1="480" x2="826" y1="220.0" y2="220.0" class="g"/>
+<text x="472" y="224.0" class="a" text-anchor="end">0</text>
+<line x1="480" x2="826" y1="176.0" y2="176.0" class="g"/>
+<text x="472" y="180.0" class="a" text-anchor="end">1,000</text>
+<line x1="480" x2="826" y1="132.0" y2="132.0" class="g"/>
+<text x="472" y="136.0" class="a" text-anchor="end">2,000</text>
+<line x1="480" x2="826" y1="88.0" y2="88.0" class="g"/>
+<text x="472" y="92.0" class="a" text-anchor="end">3,000</text>
+<line x1="480" x2="826" y1="44.0" y2="44.0" class="g"/>
+<text x="472" y="48.0" class="a" text-anchor="end">4,000</text>
+<text x="480.0" y="236" class="a" text-anchor="middle">0</text>
+<text x="653.0" y="254" class="a" text-anchor="middle">minutes since the Job started</text>
+<polygon points="480.0,220.0 480.0,220.0 511.5,220.0 542.9,220.0 574.4,211.0 605.8,166.2 637.3,153.5 668.7,198.5 700.2,210.2 731.6,121.7 763.1,68.0 794.5,79.6 826.0,87.3 826.0,220.0" fill="#2a6fdb" fill-opacity="0.15"/>
+<polyline points="480.0,220.0 511.5,220.0 542.9,220.0 574.4,211.0 605.8,166.2 637.3,153.5 668.7,198.5 700.2,210.2 731.6,121.7 763.1,68.0 794.5,79.6 826.0,87.3" fill="none" stroke="#2a6fdb" stroke-width="2"/>
+</svg>

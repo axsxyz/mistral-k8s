@@ -1,0 +1,5 @@
+# A namespace groups everything this project creates, so it can be listed or deleted in one command.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mistral

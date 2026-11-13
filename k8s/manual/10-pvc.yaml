@@ -1,0 +1,14 @@
+# PersistentVolumeClaim: a request for disk that outlives the pod. The model weights (~2 GB) are downloaded once into
+# it; when the pod restarts or is replaced, the new pod finds them already there.
+# kind ships a "standard" StorageClass (local-path) that creates the volume on the node's disk.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: model-cache
+  namespace: mistral
+spec:
+  accessModes: [ReadWriteOnce]   # mounted read-write by one node at a time
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 5Gi

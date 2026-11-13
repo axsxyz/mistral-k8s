@@ -67,7 +67,10 @@ metrics:
   path: /metrics
   serviceMonitor:
     enabled: false   # Terraform turns it on with var.monitoring (needs the kube-prometheus-stack CRDs)
-    interval: 15s
+    # Near real time: one sample per second (a /metrics scrape costs the server ~nothing). The timeout must not exceed
+    # the interval, or Prometheus rejects the configuration.
+    interval: 1s
+    scrapeTimeout: 1s
 
 service:
   type: NodePort

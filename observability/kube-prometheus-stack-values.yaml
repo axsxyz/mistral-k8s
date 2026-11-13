@@ -14,6 +14,10 @@ prometheus:
       requests: { cpu: 200m, memory: 512Mi }
 
 grafana:
+  # Grafana refuses dashboard refresh rates below this server setting (default 5s).
+  grafana.ini:
+    dashboards:
+      min_refresh_interval: 1s
   # Dashboards are loaded from ConfigMaps labelled grafana_dashboard=1 (Terraform creates the vLLM one).
   sidecar:
     dashboards:

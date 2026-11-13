@@ -44,6 +44,26 @@ grafana-sc-dashboard : Writing /tmp/dashboards/vllm-dashboard.json
 Je l'ai construit à partir de la **liste réelle** des métriques exposées par le pod
 (`kubectl exec … curl localhost:8000/metrics`), pas de mémoire.
 
+## Passer en quasi temps réel
+
+Au départ, le tableau de bord se rafraîchissait au mieux toutes les 5 s, et c'était le moins limitant des trois
+freins :
+
+| Couche | Avant | Après | Où |
+|---|---|---|---|
+| Collecte de Prometheus (`interval`) | 15 s | **1 s** (avec `scrapeTimeout: 1s` : le timeout ne doit pas dépasser l'intervalle) | `values.yaml` → `metrics.serviceMonitor` |
+| Fenêtre de `rate()` et `histogram_quantile()` | 1 min, figée | variable **Rate window**, 10 s par défaut (5 s / 10 s / 30 s / 1 min) | `vllm-dashboard.json` |
+| Rafraîchissement de Grafana | 5 s minimum | **1 s** (`grafana.ini` → `dashboards.min_refresh_interval`) | `kube-prometheus-stack-values.yaml` |
+
+**Les compromis :**
+
+- **La fenêtre.** Courte, la courbe réagit vite mais bruite (peu d'échantillons). Longue, elle est lisse mais en
+  retard. Il faut au moins 2 échantillons dans la fenêtre pour un `rate()`, donc 5 s minimum avec une collecte à 1 s.
+- **Le coût.** 15 fois plus d'échantillons stockés. C'est négligeable ici (un seul pod, rétention de 2 jours), mais en
+  production on garde 15 à 30 s par défaut et on réserve 1 s à quelques métriques critiques.
+- **Pour du vrai temps réel** (événement par événement), on ne passe plus par Prometheus : on utilise les logs de vLLM,
+  des traces (OpenTelemetry) ou un flux direct (Grafana Live).
+
 ## Le load test
 
 ```bash

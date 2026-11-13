@@ -7,9 +7,9 @@
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "refresh": "10s",
+  "refresh": "1s",
   "time": {
-    "from": "now-30m",
+    "from": "now-15m",
     "to": "now"
   },
   "templating": {
@@ -19,6 +19,39 @@
         "type": "datasource",
         "query": "prometheus",
         "label": "Prometheus"
+      },
+      {
+        "name": "window",
+        "label": "Rate window",
+        "type": "custom",
+        "query": "5s,10s,30s,1m",
+        "current": {
+          "text": "10s",
+          "value": "10s"
+        },
+        "options": [
+          {
+            "text": "5s",
+            "value": "5s",
+            "selected": false
+          },
+          {
+            "text": "10s",
+            "value": "10s",
+            "selected": true
+          },
+          {
+            "text": "30s",
+            "value": "30s",
+            "selected": false
+          },
+          {
+            "text": "1m",
+            "value": "1m",
+            "selected": false
+          }
+        ],
+        "description": "Window of rate() and histogram_quantile(): short = reactive but noisy, long = smooth but lagging"
       }
     ]
   },
@@ -58,7 +91,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(vllm:generation_tokens_total[1m]))",
+          "expr": "sum(rate(vllm:generation_tokens_total[$window]))",
           "refId": "A"
         }
       ],
@@ -99,7 +132,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[$window])))",
           "refId": "A"
         }
       ],
@@ -226,7 +259,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(vllm:generation_tokens_total[1m]))",
+          "expr": "sum(rate(vllm:generation_tokens_total[$window]))",
           "legendFormat": "generation",
           "refId": "A"
         },
@@ -235,7 +268,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(vllm:prompt_tokens_total[1m]))",
+          "expr": "sum(rate(vllm:prompt_tokens_total[$window]))",
           "legendFormat": "prompt (prefill)",
           "refId": "B"
         }
@@ -299,7 +332,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(vllm:request_success_total[1m]))",
+          "expr": "sum(rate(vllm:request_success_total[$window]))",
           "legendFormat": "finished / s",
           "refId": "C"
         }
@@ -345,7 +378,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[$window])))",
           "legendFormat": "p50",
           "refId": "A"
         },
@@ -354,7 +387,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[$window])))",
           "legendFormat": "p95",
           "refId": "B"
         },
@@ -363,7 +396,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(vllm:time_to_first_token_seconds_bucket[$window])))",
           "legendFormat": "p99",
           "refId": "C"
         }
@@ -409,7 +442,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:inter_token_latency_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:inter_token_latency_seconds_bucket[$window])))",
           "legendFormat": "p50",
           "refId": "A"
         },
@@ -418,7 +451,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:inter_token_latency_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:inter_token_latency_seconds_bucket[$window])))",
           "legendFormat": "p95",
           "refId": "B"
         }
@@ -464,7 +497,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket[$window])))",
           "legendFormat": "p50",
           "refId": "A"
         },
@@ -473,7 +506,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket[$window])))",
           "legendFormat": "p95",
           "refId": "B"
         }
@@ -519,7 +552,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_queue_time_seconds_bucket[1m])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(vllm:request_queue_time_seconds_bucket[$window])))",
           "legendFormat": "queue time p95 (s)",
           "refId": "A"
         },
@@ -537,7 +570,7 @@
             "type": "prometheus",
             "uid": "${datasource}"
           },
-          "expr": "sum(rate(vllm:num_preemptions_total[1m]))",
+          "expr": "sum(rate(vllm:num_preemptions_total[$window]))",
           "legendFormat": "preemptions / s",
           "refId": "C"
         }
@@ -545,5 +578,15 @@
       "id": 10
     }
   ],
-  "description": "Built from the metrics vLLM v0.32.0 exposes on /metrics. CPU profile (llama.cpp) metrics use other names and are not shown."
+  "description": "Built from the metrics vLLM v0.32.0 exposes on /metrics. CPU profile (llama.cpp) metrics use other names and are not shown. Scraped every 1 s; the Rate window variable sets the rate()/quantile window (default 10 s).",
+  "timepicker": {
+    "refresh_intervals": [
+      "1s",
+      "2s",
+      "5s",
+      "10s",
+      "30s",
+      "1m"
+    ]
+  }
 }

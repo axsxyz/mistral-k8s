@@ -46,9 +46,14 @@ templates/
 
 **Trois détails qui comptent :**
 
-- **`checksum/values` :** une annotation du pod qui contient le hash des values. Si une valeur change (par exemple un
-  argument), le template du pod change, donc Kubernetes le redémarre. Sans ça, changer une ConfigMap ou des values ne
-  redémarre rien.
+- **`checksum/values` (retirée ensuite) :** j'avais mis sur le pod une annotation contenant le hash de **toutes** les
+  values, pour le redémarrer à chaque changement de config. Erreur de conception, découverte à l'étape 7 :
+  - les arguments et variables sont **déjà** dans le template du pod, donc les changer le redémarre de toute façon ;
+  - l'annotation redémarrait vLLM (~4 min) pour **n'importe quelle** valeur, même l'intervalle de collecte de
+    Prometheus, qui ne concerne pas le pod.
+
+  Le bon usage : un `checksum/config` calculé sur le **contenu d'une ConfigMap ou d'un Secret** monté dans le pod, car
+  Kubernetes ne redémarre pas un pod quand ces objets changent.
 - **`helm.sh/resource-policy: keep` sur le PVC :** `helm uninstall` laisse le disque et ses poids en place.
 - **Labels standards `app.kubernetes.io/*` :** `name`, `instance`, `version` et `managed-by` sont reconnus par tous les
   outils.
@@ -87,6 +92,9 @@ Le profil GPU ajoutera `values-gpu.yaml` par-dessus les valeurs par défaut, ave
 
 - **Basculer de `kubectl apply` à Helm/Terraform sur les mêmes noms d'objets :** il faut supprimer la version manuelle
   d'abord, sinon il y a conflit de propriété.
+- **Modifier un chart local sans incrémenter sa `version` :** `terraform plan` ne voit rien. Le provider compare la
+  version du chart et les values, pas le contenu des templates. Réflexe : chaque changement de template ou de valeur
+  par défaut fait monter `version` dans `Chart.yaml` (0.1.0 → 0.2.0), comme pour n'importe quel paquet.
 - **Le provider helm v3 a changé de syntaxe :** `kubernetes = { ... }` est un attribut, plus un bloc.
 - **`terraform.tfstate` et `tfplan` sont dans le `.gitignore`.** Le lock file, lui, est commité.
 
@@ -103,4 +111,6 @@ Le profil GPU ajoutera `values-gpu.yaml` par-dessus les valeurs par défaut, ave
   Un écart entre l'état réel et le code, par exemple un changement fait à la main. `terraform plan` la montre comme un
   changement à appliquer.
 - **Comment redémarrer automatiquement les pods quand la config change ?**
-  Avec une annotation de checksum sur le template du pod, comme `checksum/values` ici.
+  Si la config est dans le template du pod (args, env), c'est automatique. Si elle est dans une ConfigMap ou un Secret
+  monté, on ajoute au template une annotation contenant le hash de **ce** contenu (`checksum/config`). Ne pas hasher
+  toutes les values : chaque détail redémarrerait le pod.

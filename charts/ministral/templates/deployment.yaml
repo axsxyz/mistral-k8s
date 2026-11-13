@@ -15,9 +15,6 @@ spec:
     metadata:
       labels:
         {{- include "ministral.selectorLabels" . | nindent 8 }}
-      annotations:
-        # Restart the pod when the values change, even if only args changed.
-        checksum/values: {{ toJson .Values | sha256sum }}
     spec:
       containers:
         - name: server

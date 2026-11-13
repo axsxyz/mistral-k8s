@@ -29,6 +29,10 @@ args:
   - "0.6"          # Windows keeps ~4 GB of the 16 GB for the display
   - --port
   - "8000"
+  # The model card recommends temperature < 0.1 for production. Without this, requests that do not set a temperature
+  # get vLLM's default of 1.0 (the model's generation_config.json sets none).
+  - --override-generation-config
+  - '{"temperature": 0.1}'
 
 env:
   - name: HF_HOME          # Hugging Face cache on the persistent volume

@@ -22,6 +22,18 @@ variable "gpu_node" {
   default     = "mistral-control-plane"
 }
 
+variable "monitoring" {
+  description = "Install kube-prometheus-stack (Prometheus + Grafana) and scrape the model server."
+  type        = bool
+  default     = false
+}
+
+variable "extra_values_files" {
+  description = "More values files layered last over the model chart (e.g. the CI sizing in charts/ministral/values-ci.yaml)."
+  type        = list(string)
+  default     = []
+}
+
 variable "profile" {
   description = "cpu = llama.cpp + GGUF Q4 on CPU; gpu = vLLM + FP8 weights on one NVIDIA GPU."
   type        = string

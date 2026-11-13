@@ -1,0 +1,18 @@
+{{- /* Tells the Prometheus Operator to scrape the model server's /metrics. Rendered only when enabled AND when the
+ServiceMonitor CRD exists (installed by kube-prometheus-stack), so the chart still installs on a bare cluster. */ -}}
+{{- if and .Values.metrics.serviceMonitor.enabled (.Capabilities.APIVersions.Has "monitoring.coreos.com/v1/ServiceMonitor") }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "ministral.fullname" . }}
+  labels:
+    {{- include "ministral.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "ministral.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: http
+      path: {{ .Values.metrics.path }}
+      interval: {{ .Values.metrics.serviceMonitor.interval }}
+{{- end }}

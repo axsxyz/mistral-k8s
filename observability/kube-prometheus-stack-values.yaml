@@ -1,0 +1,22 @@
+# kube-prometheus-stack, trimmed for a one-node local cluster: Prometheus + Grafana + the operator.
+
+alertmanager:
+  enabled: false        # no alert routing in a local learning setup
+
+prometheus:
+  prometheusSpec:
+    # By default Prometheus only picks up ServiceMonitors that carry this chart's release label. Ours are created by
+    # another release (the model server), so select every ServiceMonitor in the cluster.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    retention: 2d
+    resources:
+      requests: { cpu: 200m, memory: 512Mi }
+
+grafana:
+  # Dashboards are loaded from ConfigMaps labelled grafana_dashboard=1 (Terraform creates the vLLM one).
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL
+  defaultDashboardsTimezone: browser

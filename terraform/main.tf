@@ -17,7 +17,10 @@ provider "helm" {
 locals {
   chart_dir = "${path.module}/../charts/ministral"
   # The GPU profile layers values-gpu.yaml over the chart defaults (which are the CPU profile).
-  values_files = var.profile == "gpu" ? ["${local.chart_dir}/values-gpu.yaml"] : []
+  values_files = concat(
+    var.profile == "gpu" ? ["${local.chart_dir}/values-gpu.yaml"] : [],
+    var.extra_values_files,
+  )
 }
 
 resource "kubernetes_namespace_v1" "mistral" {
@@ -60,6 +63,37 @@ resource "helm_release" "nvidia_device_plugin" {
   depends_on = [kubernetes_labels.gpu_node]
 }
 
+# --- Monitoring (optional) --------------------------------------------------------------------------------------------
+
+# Prometheus Operator + Prometheus + Grafana. Installed before the model server so that the ServiceMonitor CRD exists
+# when the model's chart renders its ServiceMonitor.
+resource "helm_release" "monitoring" {
+  count            = var.monitoring ? 1 : 0
+  name             = "monitoring"
+  namespace        = "monitoring"
+  create_namespace = true
+  repository       = "https://prometheus-community.github.io/helm-charts"
+  chart            = "kube-prometheus-stack"
+  version          = "92.16.1"
+  values           = [file("${path.module}/../observability/kube-prometheus-stack-values.yaml")]
+  wait             = true
+  timeout          = 600
+}
+
+# The vLLM dashboard, picked up by Grafana's sidecar through the grafana_dashboard label.
+resource "kubernetes_config_map_v1" "vllm_dashboard" {
+  count = var.monitoring ? 1 : 0
+  metadata {
+    name      = "vllm-dashboard"
+    namespace = "monitoring"
+    labels    = { grafana_dashboard = "1" }
+  }
+  data = {
+    "vllm-dashboard.json" = file("${path.module}/../observability/vllm-dashboard.json")
+  }
+  depends_on = [helm_release.monitoring]
+}
+
 # --- Model server -----------------------------------------------------------------------------------------------------
 
 resource "helm_release" "ministral" {
@@ -69,8 +103,12 @@ resource "helm_release" "ministral" {
 
   values = [for f in local.values_files : file(f)]
 
-  # On the GPU profile, the GPU must be advertised before the pod can be scheduled.
-  depends_on = [helm_release.nvidia_device_plugin]
+  set = [
+    { name = "metrics.serviceMonitor.enabled", value = tostring(var.monitoring) },
+  ]
+
+  # The GPU must be advertised before the pod can be scheduled; the ServiceMonitor CRD must exist before it is rendered.
+  depends_on = [helm_release.nvidia_device_plugin, helm_release.monitoring]
 
   # Wait until the Deployment is available: the first start downloads the weights and loads the model.
   wait    = true

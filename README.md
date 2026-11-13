@@ -70,7 +70,7 @@ served from Kubernetes.
 | One request, same question | **113 tokens in 0.89 s end to end (~127 tokens/s)** | 104 tokens in ~10.7 s (prefill ~104 tok/s, generation ~19 tok/s) |
 | Under concurrent load | to measure (step F) | to measure (step F) |
 
-The GPU numbers match a plain `docker run` of the same server (step B): Kubernetes adds no overhead on the GPU path.
+Memory profile and startup time match a plain `docker run` of the same server (step B).
 
 One finding worth knowing before you deploy: when the client sends no system prompt, the GGUF chat template injects
 Mistral's default one (~530 tokens). On CPU that costs ~5 s before the first token on a 10-token question. vLLM with

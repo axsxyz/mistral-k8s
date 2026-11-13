@@ -126,7 +126,7 @@ GPU KV cache size: 40,384 tokens, Maximum concurrency for 8,192 tokens per reque
 init engine (profile, create kv cache, warmup model) took 150.06 s
 ```
 
-Ce sont les mêmes chiffres qu'en Docker seul (fiche 2) : **Kubernetes n'ajoute pas de surcoût sur le GPU**. L'apply
+Mémoire et temps de démarrage identiques à Docker seul (fiche 2). Le débit en Docker seul n'avait pas été mesuré : la comparaison sous charge se fait à l'étape 7. L'apply
 complet a pris ~4 min.
 
 **Même question, comparaison CPU et GPU (une requête, `temperature 0.1`) :**
@@ -156,7 +156,7 @@ complet a pris ~4 min.
 - **`nodeAffinity` du plugin.** Le chart ne se lance que sur les nœuds étiquetés comme ayant un GPU NVIDIA. Dans un
   vrai cluster, NFD (Node Feature Discovery) détecte la carte PCI et pose le label tout seul.
 - **NVIDIA GPU Operator.** En production, il installe et gère l'ensemble à la place de ces étapes manuelles : pilote,
-  toolkit, device plugin, NFD, métriques DCGM. Il ne gère pas WSL2.
+  toolkit, device plugin, NFD, métriques DCGM. Il est conçu pour des nœuds Linux avec un pilote NVIDIA ; je ne l'ai pas testé sous WSL2, où le pilote est celui de Windows.
 
 ## Pièges
 

@@ -46,7 +46,7 @@ init engine (profile, create kv cache, warmup model) took 147.22 s
 ```
 
 **La réponse est correcte**, mais elle contient un artefact (`^{[V0-X]}`). La fiche du modèle recommande une
-**température inférieure à 0,1** en production, et la valeur par défaut était 0,8 (corrigé à l'étape 4).
+**température inférieure à 0,1** en production. Or vLLM applique 1,0 par défaut : le `generation_config.json` du modèle ne fixe pas de température, donc c'est la valeur par défaut de `SamplingParams` qui s'applique (vérifié dans l'image). Corrigé côté serveur par `--override-generation-config` dans le profil GPU (fiche 7) et par `--temp 0.1` côté llama.cpp (fiche 4).
 
 ## Concepts
 

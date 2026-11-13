@@ -62,6 +62,13 @@ probes:
   readiness: { periodSeconds: 10 }
   liveness: { periodSeconds: 20, failureThreshold: 3 }
 
+# Prometheus metrics. Both servers expose /metrics (llama.cpp needs --metrics, set above; vLLM always does).
+metrics:
+  path: /metrics
+  serviceMonitor:
+    enabled: false   # Terraform turns it on with var.monitoring (needs the kube-prometheus-stack CRDs)
+    interval: 15s
+
 service:
   type: NodePort
   port: 80

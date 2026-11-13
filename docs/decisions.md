@@ -53,7 +53,8 @@ Short records of each choice: the context, what I picked, and what would change 
 ## 6. Weights on a PersistentVolumeClaim, kept on uninstall
 
 - **Decision:** weights download once into a PVC. A pod restart or replacement reuses them. The PVC carries
-  `helm.sh/resource-policy: keep`, so `helm uninstall` / `terraform destroy` do not throw away gigabytes of weights.
+  `helm.sh/resource-policy: keep`, so `helm uninstall` (or Terraform replacing the release) does not throw away gigabytes
+  of weights. `terraform destroy` still removes them, because it deletes the namespace and the PVC with it.
 - **Strategy:** `Recreate` rather than `RollingUpdate`. The volume is ReadWriteOnce, and one GPU cannot hold two
   servers during a rollout.
 - **In production:**
